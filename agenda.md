@@ -2,7 +2,7 @@
 ## Master Agenda — April 15, 2026 | TVA HQ
 
 **Total Duration:** 8 hours  
-**Goal:** Every participant leaves with a working, secure, end-to-end Copilot Studio → Azure AI integration — the TVA Document Processor agent
+**Goal:** Every participant leaves with a **production-ready, Entra ID–secured, live Azure deployment** of the TVA Document Processor agent — not just a local demo, but a real URL they can hand to TVA stakeholders tomorrow
 
 ---
 

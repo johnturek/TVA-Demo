@@ -1,13 +1,16 @@
-# Lab 3: APIM + MCP Integration
+# Lab 3: APIM + MCP Integration — Local to Production
 **Duration:** 90 minutes | **Session:** 3 of 3 | **Presenter:** JT
+
+> 📚 **Microsoft Learn:** [Azure API Management overview](https://learn.microsoft.com/en-us/azure/api-management/api-management-key-concepts) | [Azure Container Apps](https://learn.microsoft.com/en-us/azure/container-apps/) | [Copilot Studio MCP](https://learn.microsoft.com/en-us/microsoft-copilot-studio/agent-extend-action-mcp)
 
 ---
 
 ## Objectives
 By the end of this lab, participants will have:
-- A Docker-based TVA backend simulator running
-- Azure APIM configured in front of it
+- A Docker-based TVA backend running locally (fast iteration)
+- Azure APIM configured with Entra ID JWT validation
 - Copilot Studio agent calling the backend securely via APIM
+- **A production-ready deployment on Azure Container Apps** — live, secured, shareable
 - An MCP server loaded with TVA public docs
 - Understanding of OBO token flow for production-grade auth
 - Know when to use MCP vs agent flows vs sub-agent models
@@ -261,5 +264,129 @@ Run this conversation to show the full stack working:
 
 ---
 
+## Part 7: Deploy to Production — Azure Container Apps (20 min)
+
+This is the step that turns your workshop demo into a real production asset TVA can actually use.
+
+> 📚 **MS Learn:** [Deploy to Azure Container Apps](https://learn.microsoft.com/en-us/azure/container-apps/quickstart-portal) | [APIM with Container Apps backend](https://learn.microsoft.com/en-us/azure/api-management/import-container-app-with-oas)
+
+### Step 1: Run the Provisioning Script
+```bash
+cd ~/TVA-Demo
+chmod +x boilerplate/provision-azure.sh
+./boilerplate/provision-azure.sh [your-initials]   # e.g. ./provision-azure.sh jt
+```
+
+This script (~15 min) automatically:
+1. Creates an **Entra ID app registration** with correct API permissions
+2. Builds and pushes your MCP server to **Azure Container Registry**
+3. Deploys MCP server as a **Container App** (publicly accessible HTTPS endpoint)
+4. Provisions **APIM** in front of it with JWT validation policy
+5. Outputs all values you need for Copilot Studio
+
+### Step 2: Review the Outputs
+When the script completes, you'll see:
+```
+==================== APIM OUTPUTS ====================
+APIM_NAME:      mcp-workshop-jt-apim
+APIM_GATEWAY:   https://mcp-workshop-jt-apim.azure-api.net
+MCP_ENDPOINT:   https://mcp-workshop-jt-apim.azure-api.net/mcp
+PRM_METADATA:   https://mcp-workshop-jt-apim.azure-api.net/.well-known/oauth-protected-resource
+BACKEND_URL:    https://mcp-workshop-jt-mcp.agreeabledune-xxx.eastus2.azurecontainerapps.io
+JWT_AUDIENCE:   api://[your-app-id]
+JWT_ISSUER:     https://login.microsoftonline.com/[tenant-id]/v2.0
+=======================================================
+```
+
+Outputs are also saved to `.workshop-outputs.env` — source it for use in other scripts:
+```bash
+source .workshop-outputs.env
+```
+
+### Step 3: Update Copilot Studio to Point to Production
+1. Open your agent in Copilot Studio
+2. Go to **Tools** → find your MCP tool → **Edit**
+3. Update the server URL from `http://localhost:3002/mcp` → your `MCP_ENDPOINT`
+4. Update authentication to use `JWT_AUDIENCE` from script output
+
+> 📚 [Connect Copilot Studio to an MCP server](https://learn.microsoft.com/en-us/microsoft-copilot-studio/mcp-add-existing-server-to-agent)
+
+### Step 4: Verify Production End-to-End
+```bash
+# Health check (no auth needed)
+curl https://mcp-workshop-jt-apim.azure-api.net/mcp/health
+
+# MCP call with token (requires valid Entra ID token)
+TOKEN=$(az account get-access-token --resource $JWT_AUDIENCE --query accessToken -o tsv)
+curl -X POST $MCP_ENDPOINT \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"method":"tools/list","params":{}}'
+```
+
+### What You Just Built — The Production Architecture
+
+```
+User
+  │
+  ▼
+Copilot Studio Agent
+  │  (Entra ID SSO — user's identity forwarded)
+  ▼
+Azure APIM  ──── JWT validation (validate-azure-ad-token policy)
+  │           ──── CORS policy
+  │           ──── Rate limiting
+  ▼
+Azure Container Apps (TVA MCP Server)
+  │  (always-on, auto-scaling, HTTPS)
+  ▼
+TVA Knowledge Base (Azure AI Search + AI Foundry)
+```
+
+> ⚠️ **Vignette: APIM provisioning takes 10-15 minutes**
+> The Consumption tier APIM is fast to create but still takes time. Run the script at the start of the session break so it's ready by the time you need it. The script is idempotent — safe to re-run if it fails mid-way.
+>
+> 📚 [APIM tiers comparison](https://learn.microsoft.com/en-us/azure/api-management/api-management-features)
+
+> ⚠️ **Vignette: Container App returns 401 before APIM policy applies**
+> Your Container App backend URL is publicly accessible. Add Entra ID auth directly on the Container App as a defense-in-depth layer so only APIM can call it:
+> ```bash
+> az containerapp auth microsoft update \
+>   --name $CONTAINER_APP_NAME \
+>   --resource-group $RESOURCE_GROUP \
+>   --client-id $AZURE_CLIENT_ID \
+>   --tenant-id $AZURE_TENANT_ID
+> ```
+> 📚 [Container Apps authentication](https://learn.microsoft.com/en-us/azure/container-apps/authentication)
+
+---
+
+## Lab 3 Final Checkpoint ✅
+
+- [ ] Docker backend ran locally (localhost:3001 health check passed)
+- [ ] APIM JWT policy validated tokens correctly
+- [ ] MCP tools discovered and called in Copilot Studio
+- [ ] `provision-azure.sh` ran successfully
+- [ ] Production MCP endpoint responds to authenticated requests
+- [ ] Copilot Studio agent updated to point to production endpoint
+- [ ] End-to-end demo conversation works against live Azure backend
+
+---
+
+## Learn More
+| Topic | Microsoft Learn Link |
+|-------|---------------------|
+| Azure Container Apps | https://learn.microsoft.com/en-us/azure/container-apps/ |
+| APIM JWT validation | https://learn.microsoft.com/en-us/azure/api-management/validate-jwt-policy |
+| APIM + Entra ID | https://learn.microsoft.com/en-us/azure/api-management/api-management-howto-protect-backend-with-aad |
+| Copilot Studio MCP | https://learn.microsoft.com/en-us/microsoft-copilot-studio/agent-extend-action-mcp |
+| Connect MCP server | https://learn.microsoft.com/en-us/microsoft-copilot-studio/mcp-add-existing-server-to-agent |
+| OBO token flow | https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-on-behalf-of-flow |
+| Container Apps auth | https://learn.microsoft.com/en-us/azure/container-apps/authentication |
+
+---
+
 ## Executive Takeaway
 This is the pattern every government AI deployment should follow: the user talks to Copilot in plain English, Copilot routes to the right system through a secure API gateway, and every request is logged with the user's identity. TVA's compliance team gets AI capability without compromising the audit controls NERC CIP requires.
+
+**What TVA owns at the end of today:** A production-ready, Entra ID–secured, auto-scaling AI agent connected to TVA's own knowledge base — deployed in Azure, accessible from Teams, and ready for real users.
