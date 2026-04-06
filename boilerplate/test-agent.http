@@ -1,0 +1,187 @@
+### ============================================================
+### TVA Workshop — API Test File
+### Use with VS Code REST Client extension (ms-vscode.rest-client)
+### Set variables below or use a .env file
+### ============================================================
+
+@foundryEndpoint = {{$dotenv AZURE_OPENAI_ENDPOINT}}
+@foundryKey      = {{$dotenv AZURE_OPENAI_KEY}}
+@searchEndpoint  = {{$dotenv AZURE_SEARCH_ENDPOINT}}
+@searchKey       = {{$dotenv AZURE_SEARCH_KEY}}
+@apimBase        = https://tva-workshop-apim.azure-api.net/tva-YOURNAME
+@apimKey         = workshop-demo-key-2026
+@backendLocal    = http://localhost:3001
+@mcpLocal        = http://localhost:3002
+
+### ============================================================
+### SECTION 1 — Local Docker Services
+### ============================================================
+
+### 1a. TVA Backend Health Check
+GET {{backendLocal}}/health
+
+###
+
+### 1b. TVA MCP Server Health Check
+GET {{mcpLocal}}/health
+
+###
+
+### 1c. Query TVA Backend Directly
+POST {{backendLocal}}/api/query
+Content-Type: application/json
+X-Api-Key: {{apimKey}}
+
+{
+  "query": "NERC CIP-007 patch management requirements",
+  "top": 3
+}
+
+###
+
+### ============================================================
+### SECTION 2 — MCP Server Tools
+### ============================================================
+
+### 2a. List Available MCP Tools
+POST {{mcpLocal}}/mcp
+Content-Type: application/json
+
+{
+  "method": "tools/list",
+  "params": {}
+}
+
+###
+
+### 2b. Search TVA Documents
+POST {{mcpLocal}}/mcp
+Content-Type: application/json
+
+{
+  "method": "tools/call",
+  "params": {
+    "name": "search_tva_docs",
+    "arguments": {
+      "query": "nuclear plant safety temperature limits",
+      "top": 2
+    }
+  }
+}
+
+###
+
+### 2c. Get NERC Requirement
+POST {{mcpLocal}}/mcp
+Content-Type: application/json
+
+{
+  "method": "tools/call",
+  "params": {
+    "name": "get_nerc_requirement",
+    "arguments": {
+      "standard": "CIP-007"
+    }
+  }
+}
+
+###
+
+### 2d. Check Compliance Status
+POST {{mcpLocal}}/mcp
+Content-Type: application/json
+
+{
+  "method": "tools/call",
+  "params": {
+    "name": "check_compliance_status",
+    "arguments": {
+      "standard": "CIP-010"
+    }
+  }
+}
+
+###
+
+### 2e. List All Regulations
+POST {{mcpLocal}}/mcp
+Content-Type: application/json
+
+{
+  "method": "tools/call",
+  "params": {
+    "name": "list_regulations",
+    "arguments": {}
+  }
+}
+
+###
+
+### ============================================================
+### SECTION 3 — Azure APIM
+### ============================================================
+
+### 3a. Query via APIM (update suffix in @apimBase above)
+POST {{apimBase}}/api/query
+Content-Type: application/json
+X-Api-Key: {{apimKey}}
+
+{
+  "query": "grid reliability performance targets",
+  "top": 3
+}
+
+###
+
+### ============================================================
+### SECTION 4 — Azure OpenAI / AI Foundry
+### ============================================================
+
+### 4a. Direct Azure OpenAI — No RAG (baseline test)
+POST {{foundryEndpoint}}/openai/deployments/gpt-4o/chat/completions?api-version=2024-05-01-preview
+Content-Type: application/json
+api-key: {{foundryKey}}
+
+{
+  "messages": [
+    {"role": "system", "content": "You are a TVA compliance assistant."},
+    {"role": "user", "content": "What are the NERC CIP-007 requirements?"}
+  ],
+  "max_tokens": 500
+}
+
+###
+
+### 4b. Azure OpenAI WITH RAG — AI Search grounding
+POST {{foundryEndpoint}}/openai/deployments/gpt-4o/chat/completions?api-version=2024-05-01-preview
+Content-Type: application/json
+api-key: {{foundryKey}}
+
+{
+  "messages": [
+    {"role": "system", "content": "You are a TVA compliance assistant. Always cite your sources."},
+    {"role": "user", "content": "Summarize TVA's NERC CIP compliance posture"}
+  ],
+  "data_sources": [
+    {
+      "type": "azure_search",
+      "parameters": {
+        "endpoint": "{{searchEndpoint}}",
+        "index_name": "tva-knowledge-base",
+        "authentication": {
+          "type": "api_key",
+          "key": "{{searchKey}}"
+        }
+      }
+    }
+  ],
+  "max_tokens": 800
+}
+
+###
+
+### 4c. Test File Upload (multipart — use curl for binary files)
+# curl -X POST "{{foundryEndpoint}}/openai/deployments/gpt-4o/chat/completions?api-version=2024-05-01-preview" \
+#   -H "api-key: YOUR_KEY" \
+#   -F "file=@./docs/tva-sample.pdf" \
+#   -F 'messages=[{"role":"user","content":"Summarize this document"}]'

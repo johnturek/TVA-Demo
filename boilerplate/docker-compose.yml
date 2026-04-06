@@ -1,0 +1,25 @@
+version: '3.8'
+services:
+  tva-backend:
+    image: node:20-alpine
+    working_dir: /app
+    volumes:
+      - ./backend:/app
+    command: sh -c "npm install && node server.js"
+    ports:
+      - "3001:3001"
+    environment:
+      - PORT=3001
+      - API_KEY=workshop-demo-key-2026
+      - NODE_ENV=development
+
+  tva-mcp:
+    image: node:20-alpine
+    working_dir: /app
+    volumes:
+      - ./mcp-server:/app
+    command: sh -c "npm install && node mcp-server.js"
+    ports:
+      - "3002:3002"
+    environment:
+      - PORT=3002

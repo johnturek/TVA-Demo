@@ -1,0 +1,136 @@
+kind: AdaptiveDialog
+modelDescription: >
+  You are the TVA Document Processor, an AI assistant for Tennessee Valley Authority staff.
+  Help engineers and compliance officers find answers in TVA regulatory documents,
+  NERC CIP compliance reports, and grid reliability data.
+  Always cite the source document when answering.
+  If information is not in the provided documents, say so clearly.
+
+# ============================================================
+# CONFIGURE THESE BEFORE IMPORTING
+# Replace all {{PLACEHOLDER}} values with your actual values
+# ============================================================
+config:
+  AZURE_OPENAI_ENDPOINT: "https://{{YOUR_FOUNDRY_RESOURCE}}.openai.azure.com/"
+  AZURE_OPENAI_KEY: "{{YOUR_OPENAI_KEY}}"
+  AZURE_OPENAI_DEPLOYMENT: "gpt-4o"
+  AZURE_SEARCH_ENDPOINT: "https://{{YOUR_SEARCH_RESOURCE}}.search.windows.net"
+  AZURE_SEARCH_KEY: "{{YOUR_SEARCH_KEY}}"
+  AZURE_SEARCH_INDEX: "tva-knowledge-base"
+  APIM_ENDPOINT: "https://tva-workshop-apim.azure-api.net/tva-{{YOUR_NAME}}"
+  APIM_KEY: "workshop-demo-key-2026"
+
+topics:
+  - kind: AdaptiveDialog
+    id: documentSearch
+    displayName: Document Search
+    triggerQueries:
+      - search documents
+      - find compliance requirement
+      - what does NERC CIP say
+      - look up TVA policy
+      - what are the requirements for
+      - find information about
+    actions:
+      - kind: SendActivity
+        id: thinking
+        activity: "🔍 Searching TVA knowledge base..."
+
+      - kind: HttpRequest
+        id: queryFoundry
+        url: "${config.AZURE_OPENAI_ENDPOINT}openai/deployments/${config.AZURE_OPENAI_DEPLOYMENT}/chat/completions?api-version=2024-05-01-preview"
+        method: POST
+        headers:
+          Content-Type: application/json
+          api-key: "${config.AZURE_OPENAI_KEY}"
+        body: >
+          {
+            "messages": [
+              {
+                "role": "system",
+                "content": "You are a TVA compliance assistant. Always cite the source document and section when answering."
+              },
+              {
+                "role": "user",
+                "content": "${turn.activity.text}"
+              }
+            ],
+            "data_sources": [
+              {
+                "type": "azure_search",
+                "parameters": {
+                  "endpoint": "${config.AZURE_SEARCH_ENDPOINT}",
+                  "index_name": "${config.AZURE_SEARCH_INDEX}",
+                  "authentication": {
+                    "type": "api_key",
+                    "key": "${config.AZURE_SEARCH_KEY}"
+                  }
+                }
+              }
+            ],
+            "max_tokens": 800
+          }
+        resultVariable: Topic.FoundryResponse
+
+      - kind: SendActivity
+        id: respond
+        activity: "${Topic.FoundryResponse.choices.first().message.content}"
+
+  - kind: AdaptiveDialog
+    id: analyzeDocument
+    displayName: Analyze Uploaded Document
+    triggerQueries:
+      - analyze this document
+      - review this file
+      - check this report for compliance
+      - what does this document say
+    actions:
+      - kind: AttachmentInput
+        id: getFile
+        prompt: "Please upload the document you'd like me to analyze."
+        resultVariable: Topic.UploadedFile
+
+      - kind: SendActivity
+        id: analyzing
+        activity: "📄 Analyzing your document..."
+
+      - kind: HttpRequest
+        id: analyzeCall
+        url: "${config.AZURE_OPENAI_ENDPOINT}openai/deployments/${config.AZURE_OPENAI_DEPLOYMENT}/chat/completions?api-version=2024-05-01-preview"
+        method: POST
+        headers:
+          Content-Type: application/json
+          api-key: "${config.AZURE_OPENAI_KEY}"
+        body: >
+          {
+            "messages": [
+              {
+                "role": "system",
+                "content": "You are a TVA compliance expert. Analyze the provided document for compliance gaps, key findings, and action items. Reference NERC CIP standards where applicable."
+              },
+              {
+                "role": "user",
+                "content": "Please analyze this document:\n\n${Topic.UploadedFile.Content}"
+              }
+            ],
+            "max_tokens": 1200
+          }
+        resultVariable: Topic.AnalysisResponse
+
+      - kind: SendActivity
+        id: analysisResult
+        activity: "${Topic.AnalysisResponse.choices.first().message.content}"
+
+  - kind: AdaptiveDialog
+    id: fallback
+    displayName: Fallback / Catchall
+    triggers:
+      - kind: OnUnrecognizedIntent
+    actions:
+      - kind: SendActivity
+        activity: >
+          I can help you search TVA regulatory documents, NERC CIP compliance requirements,
+          and grid reliability data. Try asking me something like:
+          - "What are the NERC CIP-007 patch requirements?"
+          - "Search for nuclear plant safety procedures"
+          - "Analyze this compliance report" (then upload a file)
