@@ -94,12 +94,24 @@ task('dev', () => {
   logger.info('MCP endpoint:  http://localhost:8000/mcp');
   logger.info('PRM metadata:  http://localhost:8000/.well-known/oauth-protected-resource');
   logger.info('Press Ctrl+C to stop.');
-  // Use venv python if available (created by npx just install)
+
+  // Auto-copy workshop local env to .env if missing
+  const envFile = path.resolve('boilerplate/mcp-backend/.env');
+  const workshopEnv = path.resolve('boilerplate/.env.workshop-local');
+  const exampleEnv = path.resolve('boilerplate/mcp-backend/example.env');
+  if (!fs.existsSync(envFile)) {
+    const source = fs.existsSync(workshopEnv) ? workshopEnv : exampleEnv;
+    fs.copyFileSync(source, envFile);
+    logger.info('ℹ️  Created boilerplate/mcp-backend/.env (auth disabled for local dev)');
+    logger.info('   Edit this file to add your Entra ID credentials for production use.');
+  }
+
+  // Use venv python if available
   const venvPython = path.resolve('boilerplate/mcp-backend/.venv/bin/python');
   const python = fs.existsSync(venvPython) ? venvPython
     : fs.existsSync('.venv-python') ? fs.readFileSync('.venv-python', 'utf8').trim()
     : 'python3';
-  run(`${python} mcp_server.py`, { cwd: 'boilerplate/mcp-backend' });
+  run(`"${python}" mcp_server.py`, { cwd: 'boilerplate/mcp-backend' });
 });
 
 // 3. Run MCP server via PowerShell script (Windows-friendly)
