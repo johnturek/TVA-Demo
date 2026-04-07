@@ -155,11 +155,18 @@ The `tva-mcp` container (port 3002) exposes these tools:
 - `check_compliance_status` — returns mock compliance posture for a given CIP standard
 - `list_regulations` — lists all TVA-relevant regulatory frameworks
 
+> 🚨 **Transport Warning: SSE is no longer supported**
+> Copilot Studio dropped **SSE (Server-Sent Events)** transport support after August 2025. Your `tva-mcp` container **must** use **Streamable HTTP** transport. If your MCP server is running SSE mode, Copilot Studio will silently fail to connect. Verify your container's transport config before proceeding.
+
 ### Connect MCP to Copilot Studio
-1. In your agent, go to **Actions** → **+ Add action** → **Model Context Protocol**
-2. **MCP Server URL:** `http://localhost:3002/mcp`
-3. Click **Discover tools** — you should see all 4 tools listed
-4. Enable all 4 → Click **Save**
+1. In your agent, go to the **Tools** page
+2. Click **Add a tool** → **New tool** → **Model Context Protocol**
+3. A setup wizard opens — fill in:
+   - **Server name:** `TVA MCP Server`
+   - **Description:** `TVA document search and NERC compliance tools`
+   - **URL:** `http://localhost:3002/mcp`
+   - **Authentication:** None (local dev) or OAuth (production)
+4. Complete the wizard — tools surface automatically. There is **no "Discover tools" button**.
 
 Now your agent can call these tools automatically when a user asks a relevant question.
 
@@ -218,10 +225,14 @@ User → Copilot Studio → [user token] → APIM → [OBO exchange] → Backend
 ```xml
 <inbound>
   <base />
-  <validate-jwt header-name="Authorization" failed-validation-httpcode="401">
-    <openid-config url="https://login.microsoftonline.com/YOUR_TENANT_ID/v2.0/.well-known/openid-configuration" />
-    <audiences><audience>api://tva-doc-processor</audience></audiences>
-  </validate-jwt>
+  <validate-azure-ad-token header-name="Authorization" failed-validation-httpcode="401" failed-validation-error-message="Unauthorized">
+    <application-ids>
+      <application-id>api://tva-doc-processor</application-id>
+    </application-ids>
+    <audiences>
+      <audience>api://tva-doc-processor</audience>
+    </audiences>
+  </validate-azure-ad-token>
   <set-header name="X-TVA-UserId" exists-action="override">
     <value>@(context.Request.Headers.GetValueOrDefault("Authorization","").Split(' ').Last().Split('.')[1])</value>
   </set-header>
@@ -333,7 +344,7 @@ User
 Copilot Studio Agent
   │  (Entra ID SSO — user's identity forwarded)
   ▼
-Azure APIM  ──── JWT validation (validate-azure-ad-token policy)
+Azure APIM  ──── JWT validation (`validate-azure-ad-token` policy)
   │           ──── CORS policy
   │           ──── Rate limiting
   ▼
@@ -355,9 +366,11 @@ TVA Knowledge Base (Azure AI Search + AI Foundry)
 >   --name $CONTAINER_APP_NAME \
 >   --resource-group $RESOURCE_GROUP \
 >   --client-id $AZURE_CLIENT_ID \
->   --tenant-id $AZURE_TENANT_ID
+>   --client-secret $AZURE_CLIENT_SECRET \
+>   --tenant-id $AZURE_TENANT_ID \
+>   --yes
 > ```
-> 📚 [Container Apps authentication](https://learn.microsoft.com/en-us/azure/container-apps/authentication)
+> 📚 [Container Apps authentication with Entra ID](https://learn.microsoft.com/en-us/azure/container-apps/authentication-entra)
 
 ---
 
@@ -377,12 +390,12 @@ TVA Knowledge Base (Azure AI Search + AI Foundry)
 | Topic | Microsoft Learn Link |
 |-------|---------------------|
 | Azure Container Apps | https://learn.microsoft.com/en-us/azure/container-apps/ |
-| APIM JWT validation | https://learn.microsoft.com/en-us/azure/api-management/validate-jwt-policy |
+| APIM Entra ID token validation | https://learn.microsoft.com/en-us/azure/api-management/validate-azure-ad-token-policy |
 | APIM + Entra ID | https://learn.microsoft.com/en-us/azure/api-management/api-management-howto-protect-backend-with-aad |
 | Copilot Studio MCP | https://learn.microsoft.com/en-us/microsoft-copilot-studio/agent-extend-action-mcp |
 | Connect MCP server | https://learn.microsoft.com/en-us/microsoft-copilot-studio/mcp-add-existing-server-to-agent |
 | OBO token flow | https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-on-behalf-of-flow |
-| Container Apps auth | https://learn.microsoft.com/en-us/azure/container-apps/authentication |
+| Container Apps auth (Entra ID) | https://learn.microsoft.com/en-us/azure/container-apps/authentication-entra |
 
 ---
 

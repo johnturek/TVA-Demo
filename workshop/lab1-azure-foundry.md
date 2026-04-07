@@ -1,41 +1,48 @@
-# Lab 1: Azure AI Foundry Setup
+# Lab 1: Microsoft Foundry Setup
 **Duration:** 90 minutes | **Session:** 1 of 3 | **Presenter:** Kevin
 
-> 📚 **Microsoft Learn:** [Azure AI Foundry documentation](https://learn.microsoft.com/en-us/azure/ai-foundry/) | [What is Azure AI Foundry?](https://learn.microsoft.com/en-us/azure/ai-foundry/what-is-ai-foundry)
+> 📚 **Microsoft Learn:** [Microsoft Foundry documentation](https://learn.microsoft.com/en-us/azure/ai-foundry/) | [What is Microsoft Foundry?](https://learn.microsoft.com/en-us/azure/ai-foundry/what-is-ai-foundry)
 
 ---
 
 ## Objectives
 By the end of this lab, participants will have:
-- A working Azure AI Foundry project connected to the demo tenant
+- A working Microsoft Foundry project connected to the demo tenant
 - A vector index loaded with TVA regulatory and compliance documents
 - A deployed gpt-4o endpoint
-- Verified RAG queries returning TVA-relevant answers
+- A working AI agent using the Foundry Agent Service (File Search tool)
 
 ---
 
 ## Prerequisites
 - Access to JT's demo tenant (credentials distributed at check-in)
 - Azure portal access: https://portal.azure.com
-- Python 3.9+ installed (for boilerplate scripts)
+- Python 3.9+ installed
 - VS Code or any text editor
 
 ---
 
-## Part 1: Create Your AI Foundry Project (20 min)
+## Part 1: Create Your Foundry Project (20 min)
 
-> 📚 **MS Learn:** [Quickstart — Create an Azure AI Foundry project](https://learn.microsoft.com/en-us/azure/ai-foundry/agents/quickstart?pivots=ai-foundry-portal) | [Manage Azure AI Foundry hubs and projects](https://learn.microsoft.com/en-us/azure/ai-foundry/concepts/ai-foundry-hubs-projects-overview)
+> 📚 **MS Learn:** [Quickstart — Create a Microsoft Foundry project](https://learn.microsoft.com/en-us/azure/ai-foundry/agents/quickstart?pivots=ai-foundry-portal) | [Microsoft Foundry projects overview](https://learn.microsoft.com/en-us/azure/ai-foundry/concepts/ai-foundry-hubs-projects-overview)
 
-### Step 1: Open Azure AI Foundry
+> ⚠️ **Note on naming:** Microsoft rebranded "Azure AI Foundry" to **Microsoft Foundry** in early 2026. The portal is still at **https://ai.azure.com** — click the **"New Foundry"** toggle at the top if you see the old interface. Hub-based projects are now labeled "classic" — use the new flow below. Note: "Azure AI Foundry" still appears in some SDK package names and service URLs (e.g. `azure-ai-projects`, `services.ai.azure.com`) — this is expected; the brand name changed but the underlying service identifiers haven't all been updated yet.
+
+> ⚠️ **Important — SDK deprecation:** The classic Agents API (azure-ai-projects v1.x — threads/messages/runs pattern) is **deprecated** and will be retired **March 31, 2027**. This lab uses the **new Agents SDK (v2.x)** with the Conversations/Responses pattern. Do not use tutorials or examples that reference `create_thread()`, `create_message()`, or `list_messages()` — those are the old API.
+
+### Step 1: Open Microsoft Foundry
 1. Navigate to https://ai.azure.com
 2. Sign in with your demo tenant credentials
-3. Click **+ New project**
+3. If prompted, switch to the **New Foundry** experience (toggle, top-right)
+4. Click **+ Create project**
 
 ### Step 2: Configure the Project
 Fill in:
 - **Project name:** `tva-doc-processor-[yourname]`
-- **Hub:** Select the pre-provisioned `TVA-Workshop-Hub`
+- **Foundry resource:** Select the pre-provisioned `TVA-Workshop-Foundry`
 - **Region:** East US 2
+
+> ⚠️ **No hub selection needed** — the new Foundry model uses a Foundry resource directly. If you see a "Hub" dropdown, you're in the classic view. Click the **New Foundry** toggle.
 
 Click **Create project** and wait ~2 minutes.
 
@@ -45,73 +52,85 @@ Once created, confirm you see:
 - ✅ Connected resources (Azure OpenAI, Storage)
 - ✅ gpt-4o model listed under **Models + endpoints**
 
-> ⚠️ **Vignette: "No hubs available"**
-> If you don't see the workshop hub, you may be in the wrong subscription. Click your name (top right) → **Switch directory** → select the workshop tenant.
+> ⚠️ **Vignette: Wrong subscription**
+> If you don't see the workshop Foundry resource, click your name (top right) → **Switch directory** → select the workshop tenant.
 >
-> 📚 [Manage access to Azure AI Foundry](https://learn.microsoft.com/en-us/azure/ai-foundry/concepts/rbac-azure-ai-foundry)
+> 📚 [Manage access to Microsoft Foundry](https://learn.microsoft.com/en-us/azure/ai-foundry/concepts/rbac-azure-ai-foundry)
 
 ---
 
 ## Part 2: Upload TVA Documents (25 min)
 
-> 📚 **MS Learn:** [Add data to your project](https://learn.microsoft.com/en-us/azure/ai-foundry/how-to/data-add) | [Create and manage an Azure AI Search index](https://learn.microsoft.com/en-us/azure/search/search-what-is-azure-search)
+> 📚 **MS Learn:** [Add data to your project](https://learn.microsoft.com/en-us/azure/ai-foundry/how-to/data-add) | [Foundry Agent Service — File Search](https://learn.microsoft.com/en-us/azure/ai-foundry/agents/how-to/tools/file-search)
 
-We'll load the following TVA-relevant documents into the knowledge base:
+We'll load the following TVA-relevant documents into the agent's knowledge base:
 - TVA NERC CIP Compliance Summary (provided in `/docs` folder)
 - Grid Reliability Annual Report excerpt
 - Nuclear Plant Safety Procedures overview
 - Regulatory Affairs policy memo template
 
-### Step 1: Navigate to Vector Index
-1. In your project, click **Data + indexes** in the left nav
-2. Click **+ New index**
-3. Select **Upload files**
+### Step 1: Navigate to Files
 
-### Step 2: Upload Documents
-1. Click **Browse** and select all files from the workshop `/docs` folder
-2. Set index name: `tva-knowledge-base`
-3. Leave chunking at default (512 tokens, 10% overlap)
-4. Click **Next**
+> ⚠️ **Two portal paths exist — use the new one:**
+> - **New Foundry portal (use this):** From the project home page, click **Create an agent** → lands in the agent playground where you configure the agent inline.
+> - **Classic portal (avoid):** `Agents → + New agent` in the left nav — this is the hub-based classic flow. If you see a left nav with "Agents", you may be in the classic experience.
 
-> 📚 [Understand data chunking in Azure AI Foundry](https://learn.microsoft.com/en-us/azure/ai-foundry/concepts/retrieval-augmented-generation)
+1. From your project's home page, click **Create an agent**
+2. In the agent playground, scroll to **Knowledge** → click **+ Add**
+3. Select **Files** → upload all files from the workshop `/docs` folder
 
-### Step 3: Configure Embedding
-- **Embedding model:** `text-embedding-ada-002`
-- **Search type:** Hybrid (keyword + vector)
-- Click **Create**
+> 📚 [Foundry Agent Service overview](https://learn.microsoft.com/en-us/azure/ai-foundry/agents/overview)
 
-Indexing takes 3–5 minutes.
+### Step 2: Configure the Agent
+- **Agent name:** `TVA Document Processor`
+- **Model:** `gpt-4o` (pre-provisioned)
+- **Instructions:**
+```
+You are the TVA Document Processor assistant. You help TVA engineers and compliance
+officers find answers in TVA regulatory documents, NERC CIP compliance reports, and
+grid reliability data. Always cite the source document and section when answering.
+If information is not in the provided documents, say so clearly.
+```
+- **Tools:** Enable **File Search**
 
-> ⚠️ **Vignette: Indexing stuck at 0%**
-> This usually means the storage account hasn't finished provisioning. Wait 2 minutes and refresh. If still stuck, delete the index and recreate it — first-time provisioning occasionally needs a retry.
+Click **Save**.
+
+> ⚠️ **Vignette: File upload stuck**
+> If files are stuck at "Processing", wait 2–3 minutes — first-time vector store provisioning can be slow. Refresh the page. If still stuck, remove and re-upload the files.
 >
-> 📚 [Troubleshoot Azure AI Search indexers](https://learn.microsoft.com/en-us/azure/search/search-indexer-troubleshooting)
+> 📚 [Troubleshoot Foundry Agent file uploads](https://learn.microsoft.com/en-us/azure/ai-foundry/agents/how-to/tools/file-search)
 
-### Step 4: Verify Index via Python
+### Step 3: Verify via Python
 
-```python
-# See boilerplate/upload-docs.py for the full script
-import os
-from azure.core.credentials import AzureKeyCredential
-from azure.search.documents.indexes import SearchIndexClient
-
-SEARCH_ENDPOINT = os.getenv("AZURE_SEARCH_ENDPOINT")
-SEARCH_KEY      = os.getenv("AZURE_SEARCH_KEY")
-
-credential = AzureKeyCredential(SEARCH_KEY)
-client = SearchIndexClient(SEARCH_ENDPOINT, credential)
-
-for idx in client.list_indexes():
-    print(f"Index: {idx.name}")
+Install the SDK — **version 2.0.0+ is required**:
+```bash
+pip install "azure-ai-projects>=2.0.0" azure-identity
 ```
 
-> 📚 [azure-search-documents Python SDK](https://learn.microsoft.com/en-us/python/api/overview/azure/search-documents-readme)
+> ⚠️ **Version matters:** Without `>=2.0.0`, pip may install 1.x which uses the deprecated thread/message/run API. All code in this lab requires v2.x.
+
+```python
+import os
+from azure.ai.projects import AIProjectClient
+from azure.identity import DefaultAzureCredential
+
+project_client = AIProjectClient(
+    endpoint=os.getenv("AZURE_AI_PROJECT_ENDPOINT"),
+    credential=DefaultAzureCredential()
+)
+
+# List agent versions in your project
+for agent in project_client.agents.list_versions():
+    print(f"Agent: {agent.name} | ID: {agent.id}")
+```
+
+> 📚 [azure-ai-projects Python SDK](https://learn.microsoft.com/en-us/python/api/overview/azure/ai-projects-readme)
 
 ---
 
 ## Part 3: Deploy gpt-4o Endpoint (15 min)
 
-> 📚 **MS Learn:** [Deploy models in Azure AI Foundry](https://learn.microsoft.com/en-us/azure/ai-foundry/concepts/deployments-overview) | [Azure OpenAI models](https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/models)
+> 📚 **MS Learn:** [Deploy models in Microsoft Foundry](https://learn.microsoft.com/en-us/azure/ai-foundry/concepts/deployments-overview) | [Azure OpenAI models](https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/models)
 
 ### Step 1: Navigate to Models + Endpoints
 1. Click **Models + endpoints** in left nav
@@ -123,33 +142,24 @@ Save these — you'll need them in Lab 2:
 AZURE_OPENAI_ENDPOINT=https://tva-workshop.openai.azure.com/
 AZURE_OPENAI_KEY=<your-key>
 AZURE_OPENAI_DEPLOYMENT=gpt-4o
+AZURE_AI_PROJECT_ENDPOINT=https://tva-workshop.services.ai.azure.com/api/projects/tva-doc-processor-[yourname]
 ```
 
 > ⚠️ **Vignette: Quota exceeded (429 error)**
-> The workshop hub has shared quota. If you hit `429 TooManyRequests`, wait 30 seconds and retry. Do NOT create a new deployment — it pulls from the same shared pool.
+> The workshop resource has shared quota. Wait 30 seconds and retry. Do NOT create a new deployment.
 >
 > 📚 [Azure OpenAI quotas and limits](https://learn.microsoft.com/en-us/azure/ai-services/openai/quotas-limits)
 
 ---
 
-## Part 4: Test RAG Queries (30 min)
+## Part 4: Test Agent Queries (30 min)
 
-> 📚 **MS Learn:** [Use your data with Azure OpenAI](https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/use-your-data) | [Azure OpenAI On Your Data reference](https://learn.microsoft.com/en-us/azure/ai-services/openai/references/on-your-data)
+> 📚 **MS Learn:** [Foundry Agent Service quickstart](https://learn.microsoft.com/en-us/azure/ai-foundry/agents/quickstart) | [Run and evaluate agents](https://learn.microsoft.com/en-us/azure/ai-foundry/agents/concepts/runs)
 
-### Step 1: Use the Playground
-1. Click **Playgrounds** → **Chat**
-2. Under **Add your data**, select your `tva-knowledge-base` index
-3. Set system prompt:
-
-```
-You are the TVA Document Processor assistant. You help TVA engineers and compliance
-officers find answers in TVA regulatory documents, NERC CIP compliance reports, and
-grid reliability data. Always cite the source document and section number when answering.
-If information is not in the provided documents, say so clearly.
-```
-
-### Step 2: Run Test Queries
-Try each of these — verify the response cites a document:
+### Step 1: Test in the Playground
+1. Click **Agents** → select your `TVA Document Processor` agent
+2. Click **Test in playground**
+3. Run the following queries and verify each cites a document:
 
 | Query | Expected Source |
 |-------|----------------|
@@ -158,87 +168,73 @@ Try each of these — verify the response cites a document:
 | "What coolant temperature limits apply to Browns Ferry?" | Nuclear Safety Procedures |
 | "How do I submit a regulatory variance request?" | Regulatory Affairs memo |
 
-### Step 3: REST API Test
+### Step 2: REST API Test
+
+> ⚠️ **New API routes:** The classic `threads` endpoint with `api-version=2025-05-01` is deprecated. The new API uses `/openai/v1/` stable routes with no monthly api-version parameters. Terminology: Threads → Conversations, Messages → Items, Runs → Responses.
 
 ```bash
-curl -X POST "$AZURE_OPENAI_ENDPOINT/openai/deployments/gpt-4o/chat/completions?api-version=2024-05-01-preview" \
+# Create a conversation (replaces "create thread")
+PROJECT_ENDPOINT="https://tva-workshop.services.ai.azure.com/api/projects/tva-doc-processor-[yourname]"
+AGENT_ID="<your-agent-id>"
+
+curl -X POST "$PROJECT_ENDPOINT/openai/v1/conversations" \
   -H "Content-Type: application/json" \
-  -H "api-key: $AZURE_OPENAI_KEY" \
-  -d '{
-    "messages": [
-      {"role": "system", "content": "You are a TVA compliance assistant."},
-      {"role": "user", "content": "What are the NERC CIP-007 patch requirements?"}
-    ],
-    "data_sources": [{
-      "type": "azure_search",
-      "parameters": {
-        "index_name": "tva-knowledge-base",
-        "endpoint": "'"$AZURE_SEARCH_ENDPOINT"'",
-        "authentication": {"type": "api_key", "key": "'"$AZURE_SEARCH_KEY"'"}
-      }
-    }],
-    "max_tokens": 800
-  }'
+  -H "Authorization: Bearer $(az account get-access-token --query accessToken -o tsv)" \
+  -d "{\"agent_id\": \"$AGENT_ID\"}"
 ```
 
-> 📚 [Azure OpenAI REST API reference](https://learn.microsoft.com/en-us/azure/ai-services/openai/reference)
+> 📚 [Foundry Agents REST API reference](https://learn.microsoft.com/en-us/rest/api/azureaiprojects/)
 
-### Step 4: Python Integration Test
+### Step 3: Python Integration Test
+
+> ⚠️ **New SDK pattern (v2.x):** The old `create_thread()` / `create_message()` / `create_and_process_run()` / `list_messages()` methods and `MessageTextContent` import are from the deprecated classic SDK (v1.x). Use the new Conversations/Responses pattern below.
 
 ```python
-# See boilerplate/upload-docs.py for full setup
 import os
-from openai import AzureOpenAI
+from azure.ai.projects import AIProjectClient
+from azure.identity import DefaultAzureCredential
 
-client = AzureOpenAI(
-    azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
-    api_key=os.getenv("AZURE_OPENAI_KEY"),
-    api_version="2024-05-01-preview"
+project_client = AIProjectClient(
+    endpoint=os.getenv("AZURE_AI_PROJECT_ENDPOINT"),
+    credential=DefaultAzureCredential()
 )
 
-response = client.chat.completions.create(
-    model="gpt-4o",
-    messages=[
-        {"role": "system", "content": "You are a TVA compliance assistant. Cite sources."},
-        {"role": "user", "content": "Summarize TVA's NERC CIP compliance posture."}
-    ],
-    extra_body={
-        "data_sources": [{
-            "type": "azure_search",
-            "parameters": {
-                "endpoint": os.getenv("AZURE_SEARCH_ENDPOINT"),
-                "index_name": "tva-knowledge-base",
-                "authentication": {
-                    "type": "api_key",
-                    "key": os.getenv("AZURE_SEARCH_KEY")
-                }
-            }
-        }]
-    }
+agent_id = os.getenv("AZURE_AGENT_ID")
+
+# Get an OpenAI client scoped to this project
+openai_client = project_client.inference.get_azure_openai_client()
+
+# Create a conversation (replaces "thread")
+conversation = openai_client.conversations.create()
+
+# Send a message and get a response (replaces create_message + create_and_process_run)
+response = openai_client.responses.create(
+    conversation=conversation.id,
+    extra_body={"agent_reference": {"id": agent_id}},
+    input="Summarize TVA's NERC CIP compliance posture and cite sources."
 )
 
-print(response.choices[0].message.content)
-if hasattr(response.choices[0].message, 'context'):
-    for c in response.choices[0].message.context.get('citations', []):
-        print(f"📄 Source: {c['title']}")
+# Parse the response (replaces MessageTextContent iteration)
+print(response.output_text)
 ```
 
-> 📚 [openai Python library for Azure](https://learn.microsoft.com/en-us/azure/ai-services/openai/how-to/switching-endpoints)
+> 📚 [azure-ai-projects agents samples](https://learn.microsoft.com/en-us/azure/ai-foundry/agents/quickstart?pivots=programming-language-python)
 
 > ⚠️ **Vignette: Responses not citing documents**
-> If the model answers from general knowledge instead of your docs, check that **Add your data** is toggled ON in the playground. In API calls, verify the `data_sources` block is included — without it, the model ignores the index entirely.
+> If the agent answers from general knowledge, verify **File Search** is enabled in the agent's Tools section. Also confirm your files finished processing (status = "completed" in the Files panel).
 >
-> 📚 [Configure Azure OpenAI On Your Data](https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/use-your-data#configuration)
+> 📚 [File Search tool reference](https://learn.microsoft.com/en-us/azure/ai-foundry/agents/how-to/tools/file-search)
 
 ---
 
 ## Lab 1 Checkpoint ✅
 
 Before moving to lunch, verify:
-- [ ] AI Foundry project created and accessible
-- [ ] `tva-knowledge-base` index status = **Ready**
+- [ ] Foundry project created and accessible
+- [ ] TVA documents uploaded and processed (status = Ready)
 - [ ] gpt-4o endpoint URI and key saved
-- [ ] At least 2 RAG queries returned document-cited answers
+- [ ] `AZURE_AI_PROJECT_ENDPOINT` and `AZURE_AGENT_ID` saved
+- [ ] At least 2 agent queries returned document-cited answers
 - [ ] Python test script runs without errors
 
 **Save your endpoint URLs and keys** — you'll need them for Lab 2.
@@ -248,11 +244,11 @@ Before moving to lunch, verify:
 ## Learn More
 | Topic | Microsoft Learn Link |
 |-------|---------------------|
-| Azure AI Foundry overview | https://learn.microsoft.com/en-us/azure/ai-foundry/what-is-ai-foundry |
-| RAG concepts | https://learn.microsoft.com/en-us/azure/ai-foundry/concepts/retrieval-augmented-generation |
-| Azure AI Search overview | https://learn.microsoft.com/en-us/azure/search/search-what-is-azure-search |
-| Azure OpenAI On Your Data | https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/use-your-data |
-| Python SDK quickstart | https://learn.microsoft.com/en-us/azure/ai-services/openai/quickstart?pivots=programming-language-python |
+| Microsoft Foundry overview | https://learn.microsoft.com/en-us/azure/ai-foundry/what-is-ai-foundry |
+| Foundry Agent Service | https://learn.microsoft.com/en-us/azure/ai-foundry/agents/overview |
+| File Search tool | https://learn.microsoft.com/en-us/azure/ai-foundry/agents/how-to/tools/file-search |
+| azure-ai-projects SDK | https://learn.microsoft.com/en-us/python/api/overview/azure/ai-projects-readme |
+| Foundry RBAC | https://learn.microsoft.com/en-us/azure/ai-foundry/concepts/rbac-azure-ai-foundry |
 
 ---
 

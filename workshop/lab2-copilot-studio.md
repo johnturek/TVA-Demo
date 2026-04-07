@@ -14,8 +14,8 @@ By the end of this lab, participants will have:
 ---
 
 ## Prerequisites
-- Completed Lab 1 (Azure AI Foundry endpoint + index ready)
-- Your saved values: `AZURE_OPENAI_ENDPOINT`, `AZURE_OPENAI_KEY`, `AZURE_SEARCH_ENDPOINT`, `AZURE_SEARCH_KEY`
+- Completed Lab 1 (Azure AI Foundry agent deployed and endpoint ready)
+- Your saved values: `AZURE_OPENAI_ENDPOINT`, `AZURE_OPENAI_KEY`, `FOUNDRY_AGENT_ENDPOINT`, `FOUNDRY_AGENT_KEY`
 - Access to https://copilotstudio.microsoft.com
 
 ---
@@ -25,9 +25,22 @@ By the end of this lab, participants will have:
 ### Step 1: Open Copilot Studio
 1. Navigate to https://copilotstudio.microsoft.com
 2. Sign in with demo tenant credentials
-3. Click **+ Create** → **New agent**
 
-### Step 2: Name and Describe Your Agent
+### Step 2: Create Your Agent
+
+> **ℹ️ New Primary UX (as of early 2026):** The recommended way to create an agent is now **description-first from the Home page**. On the Home page, type a description of your agent in the prompt box and Copilot Studio will scaffold it for you automatically. The classic **+ Create → New agent** path (Agents page → top-left menu) still works as an alternative.
+
+**Option A — Description-first (recommended):**
+On the **Home** page, type in the description box:
+> *"An agent for TVA engineers and compliance officers to search regulatory documents, NERC CIP compliance reports, and grid reliability data."*
+
+Copilot Studio will generate a name and starting instructions. Review and adjust using the values below.
+
+**Option B — Classic flow:**
+1. Click **+ Create** → **New agent**
+2. Proceed to name and configure manually.
+
+### Step 3: Name and Describe Your Agent
 - **Name:** `TVA Document Processor`
 - **Description:** `Helps TVA engineers and compliance officers search regulatory documents, NERC CIP compliance reports, and grid reliability data.`
 - **Instructions (system prompt):**
@@ -54,69 +67,82 @@ Click **Create**.
 
 ---
 
-## Part 2: Connect to Azure AI Foundry Knowledge Base (25 min)
+## Part 2: Connect to Azure AI Foundry Agent (25 min)
 
-> ⚠️ **Important:** We are NOT using Copilot Studio's native knowledge feature. We're connecting directly to our Azure AI Foundry index for richer RAG control.
+> ⚠️ **Important:** We are NOT using Copilot Studio's native knowledge feature. We're calling the **Foundry Agent Service** endpoint created in Lab 1 directly. This gives us richer RAG control and keeps all our AI logic in Azure AI Foundry.
+>
+> **Why not `data_sources` / Azure OpenAI On Your Data?** That pattern (sending `data_sources` with `type: azure_search` in the completions body) is deprecated and being retired. The current recommended pattern is to let the Foundry Agent handle grounding and call its conversation endpoint.
 
 ### Step 1: Add a Custom Connector Topic
 1. In your agent, click **Topics** → **+ Add topic** → **From blank**
 2. Name it: `Document Search`
 3. Add a trigger phrase: `Search documents`
 
-### Step 2: Add HTTP Action
-1. In the topic canvas, click **+** → **Call an action** → **Send HTTP request**
+### Step 2: Add an HTTP Request Node
+1. In the topic canvas, click **+** → **Add node** → **Advanced** → **Send HTTP request**
+
+> ℹ️ **Terminology note:** Copilot Studio calls this a **node**, not an "action type." You'll find it under **Add node → Advanced → Send HTTP request**.
+
 2. Configure:
    - **Method:** POST
-   - **URL:** `https://YOUR_PROJECT_ENDPOINT/openai/deployments/gpt-4o/chat/completions?api-version=2024-05-01-preview`
+   - **URL:** `https://YOUR_FOUNDRY_AGENT_ENDPOINT/threads/{threadId}/messages?api-version=2024-10-21`
+   
+   > Use the **Foundry Agent Service** conversation endpoint from Lab 1, not the raw OpenAI completions endpoint.
+   
    - **Headers:**
      - `Content-Type`: `application/json`
-     - `api-key`: `[your Azure OpenAI key]`
+     - `api-key`: `[your Foundry Agent key]`
 
 ### Step 3: Build the Request Body
-Use this JSON template in the body field:
+Use this JSON template in the body field. This calls the Foundry Agent Service directly — no `data_sources` needed; the agent handles grounding internally.
 
 ```json
 {
-  "messages": [
-    {
-      "role": "system",
-      "content": "You are a TVA compliance assistant. Always cite document sources."
-    },
-    {
-      "role": "user",
-      "content": "{System.LastMessage.Text}"
-    }
-  ],
-  "data_sources": [
-    {
-      "type": "azure_search",
-      "parameters": {
-        "endpoint": "YOUR_SEARCH_ENDPOINT",
-        "index_name": "tva-knowledge-base",
-        "authentication": {
-          "type": "api_key",
-          "key": "YOUR_SEARCH_KEY"
-        }
-      }
-    }
-  ],
-  "max_tokens": 800
+  "role": "user",
+  "content": "{System.LastMessage.Text}"
 }
 ```
 
+After posting the message, add a second HTTP Request node to run the thread and poll for the response:
+
+```json
+{
+  "assistant_id": "YOUR_ASSISTANT_ID"
+}
+```
+
+> **Workshop shortcut:** For the demo flow, your facilitator has pre-configured a single-turn wrapper endpoint at `YOUR_FOUNDRY_AGENT_ENDPOINT/invoke` that accepts a user message and returns the agent's reply in one call. Use that for simplicity:
+
+```json
+{
+  "message": "{System.LastMessage.Text}",
+  "assistant_id": "YOUR_ASSISTANT_ID"
+}
+```
+
+**Wrapper endpoint URL:**
+```
+https://YOUR_FOUNDRY_AGENT_ENDPOINT/invoke?api-version=2024-10-21
+```
+
 ### Step 4: Parse and Display the Response
-1. Add a **Parse value** action → parse `Topic.HTTPResponse.Body` as JSON
-2. Add a **Send a message** action
-3. Set message to: `{Topic.ParsedResponse.choices[0].message.content}`
+1. Add a **Parse value** node → parse `Topic.HTTPResponse.Body` as JSON
+2. Add a **Send a message** node
+3. Set message expression to:
 
-> ⚠️ **Vignette: "Variable not found" error**
-> Copilot Studio's variable picker can be finicky with nested JSON. If `choices[0]` doesn't resolve, use the expression editor and type it manually: `Topic.ParsedResponse.choices.first().message.content`
+```
+Topic.ParsedResponse.choices.first().message.content
+```
 
-### Step 5: Enable Generative Answers as Fallback
-1. Go to **Settings** → **Generative AI**
-2. Toggle **Generative answers** ON
-3. Under **Knowledge**, click **+ Add knowledge** → **External data source**
-4. Add your Azure AI Search endpoint as a connected source
+> ℹ️ **Power Fx note:** Use `.first()` — this is valid Power Fx. Array index syntax like `choices[0]` is **not** valid in Copilot Studio's expression editor.
+
+### Step 5: Enable Knowledge on the Agent Overview Page
+1. Navigate back to the agent **Overview** tab (the main agent page)
+2. In the **Knowledge** section, click **+ Add knowledge**
+3. Select **Azure AI Search** (or the appropriate connector for your index)
+4. Enter your search endpoint and index details
+
+> ℹ️ **UI update:** Knowledge is now configured directly on the agent **Overview** page, not via `Settings → Generative AI → toggle ON`. If you see a toggle under Settings → Generative AI, it controls whether generative answers are *enabled*, but the knowledge sources themselves are managed from the Overview page.
 
 This ensures the agent uses your Foundry index for any question, not just the Document Search topic.
 
@@ -143,14 +169,18 @@ This is one of the most important decisions in Copilot Studio development.
 
 ### Configure OBO (Production Pattern — Demo Only)
 1. Go to **Settings** → **Security** → **Authentication**
-2. Select **Authenticate with Microsoft**
-3. Enter your app registration details (from Lab 3's `setup-app-registration.ps1`)
-4. Enable **Require users to sign in**
+2. Select **Authenticate manually**
+
+> ℹ️ **Label update:** The option was previously labeled "Authenticate with Microsoft." It is now **"Authenticate manually"** in the current UI.
+
+3. The **recommended production approach** is **Microsoft Entra ID V2** with **federated credentials** (secret-less) — no client secret stored in the agent config. This is the pattern supported for GCC and production workloads.
+4. Enter your app registration details (from Lab 3's `setup-app-registration.ps1`)
+5. Enable **Require users to sign in**
 
 When OBO is enabled, the agent forwards the logged-in user's token to backend APIs — meaning your APIM layer knows exactly which TVA engineer made the request.
 
 > ⚠️ **Vignette: GCC Tenants — Dataverse Connector Broken**
-> If you're deploying to a GCC (Government Community Cloud) tenant, the Dataverse connector for Copilot Studio skills is currently broken. Aaron has a pending PR with the product group for GCC support. Workaround: use HTTP actions directly (what we're doing in this lab) instead of Dataverse-backed skills. This is actually the more portable pattern anyway.
+> If you're deploying to a GCC (Government Community Cloud) tenant, the Dataverse connector for Copilot Studio skills is currently broken. Aaron has a pending PR with the product group for GCC support. Workaround: use HTTP Request nodes directly (what we're doing in this lab) instead of Dataverse-backed skills. This is actually the more portable pattern anyway.
 
 ---
 
@@ -179,13 +209,11 @@ After the file upload node:
 ```
 Send message: "I've received your document. Give me a moment to analyze it..."
 
-Call HTTP action:
-  POST https://YOUR_PROJECT_ENDPOINT/chat/completions
+Add HTTP Request node:
+  POST https://YOUR_FOUNDRY_AGENT_ENDPOINT/invoke?api-version=2024-10-21
   Body: {
-    "messages": [
-      {"role": "system", "content": "Analyze this TVA document for compliance issues and key findings."},
-      {"role": "user", "content": "Document content: {Topic.UploadedFile.Content}"}
-    ]
+    "message": "Analyze this TVA document for compliance issues and key findings. Document content: {Topic.UploadedFile.Content}",
+    "assistant_id": "YOUR_ASSISTANT_ID"
   }
 ```
 
@@ -214,7 +242,10 @@ Generate a Copilot Studio topic YAML for an agent that:
 
 ### Step 2: Import the YAML
 1. In Copilot Studio, go to **Topics**
-2. Click **...** menu → **Open code editor**
+2. Click the **...** menu → **Open code editor**
+
+> ℹ️ **UI note:** The menu label for the YAML/code editor may vary in the live UI — look for "Open code editor," "Edit YAML," or similar. Verify the current label in your environment.
+
 3. Paste the generated YAML
 4. Fix any validation errors (usually just variable name formatting)
 
@@ -226,8 +257,8 @@ This approach is 5-10x faster than building topics in the canvas UI — especial
 
 Before break, verify:
 - [ ] Agent created with TVA system prompt
-- [ ] Document Search topic calls Azure AI Foundry and returns cited answers
-- [ ] Generative answers fallback enabled
+- [ ] Document Search topic calls Azure AI Foundry Agent and returns cited answers
+- [ ] Knowledge added via agent Overview page
 - [ ] Authentication mode selected (maker for workshop, OBO pattern understood)
 - [ ] File upload works — uploaded a sample doc and got a summary
 - [ ] Tested at least 3 conversations in the Test panel
