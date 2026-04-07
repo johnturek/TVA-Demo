@@ -73,7 +73,7 @@ Install these before the workshop:
 | Tool | Install | Version |
 |------|---------|---------|
 | Node.js | https://nodejs.org | 18+ |
-| Python | https://python.org | 3.9+ |
+| Python | https://python.org | **3.10+** (3.12 recommended) |
 | Docker Desktop | https://docker.com/products/docker-desktop | Latest |
 | Azure CLI | https://learn.microsoft.com/en-us/cli/azure/install-azure-cli | Latest |
 | VS Code | https://code.visualstudio.com | Latest |

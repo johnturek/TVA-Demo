@@ -36,11 +36,34 @@ task('install', () => {
   run('git submodule update --init --recursive');
   logger.info('✅ Submodules ready');
 
-  // Detect pip3 vs pip (macOS ships with pip3, some Linux distros use pip)
+  // Detect python3 vs python and enforce 3.10+
+  const python = (() => {
+    for (const cmd of ['python3', 'python']) {
+      try {
+        const ver = execSync(`${cmd} -c "import sys; print(sys.version_info[:2])"`, { stdio: 'pipe' }).toString().trim();
+        // ver looks like "(3, 12)"
+        const match = ver.match(/(\d+),\s*(\d+)/);
+        if (match) {
+          const [major, minor] = [parseInt(match[1]), parseInt(match[2])];
+          if (major === 3 && minor >= 10) return cmd;
+          throw new Error(`Python 3.10+ required. Found ${major}.${minor} via '${cmd}'.\n` +
+            '👉 Install Python 3.10+ from https://python.org\n' +
+            '   On macOS with Homebrew: brew install python@3.12\n' +
+            '   Then re-run: npx just setup');
+        }
+      } catch (e) {
+        if (e.message.includes('required')) throw e;
+      }
+    }
+    throw new Error('Python not found. Install Python 3.10+ from https://python.org');
+  })();
+  logger.info(`Using ${python} (3.10+) ✅`);
+
+  // Detect pip3 vs pip
   const pip = (() => {
     try { execSync('pip3 --version', { stdio: 'ignore' }); return 'pip3'; } catch (_) {}
     try { execSync('pip --version', { stdio: 'ignore' }); return 'pip'; } catch (_) {}
-    throw new Error('Neither pip3 nor pip found. Install Python 3.9+ from https://python.org');
+    throw new Error('pip not found. Install Python 3.10+ from https://python.org');
   })();
   logger.info(`Using ${pip} to install Python dependencies...`);
   run(`${pip} install -r requirements.txt`, { cwd: 'boilerplate/mcp-backend' });
