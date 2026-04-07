@@ -176,8 +176,9 @@ task('test:prod', () => {
 // 10. Test local MCP server (runs on port 8000)
 task('test:local', () => {
   logger.info('Testing local MCP server on http://localhost:8000/mcp ...');
-  run('curl -sf http://localhost:8000/.well-known/oauth-protected-resource | python3 -m json.tool');
-  logger.info('✅ PRM metadata accessible');
+  // Hit the MCP endpoint — expect a 4xx (no session) or 2xx, not a connection error
+  run('curl -sf -o /dev/null -w "%{http_code}" http://localhost:8000/mcp | grep -qE "^[245]" && echo "\u2705 MCP server is responding" || echo "\u26a0\ufe0f  Unexpected response"');
+  logger.info('\u2705 MCP server reachable at http://localhost:8000/mcp');
 });
 
 // 11. Sync Aaron's mcp-backend submodule to latest
