@@ -31,11 +31,16 @@ function loadEnv(file = '.workshop-outputs.env') {
 
 // 1. Install all dependencies (Python MCP server + local Node tools)
 task('install', () => {
-  logger.info('Installing MCP server dependencies (Python)...');
-  run('pip install -r requirements.txt', { cwd: 'boilerplate/mcp-backend' });
+  // Detect pip3 vs pip (macOS ships with pip3, some Linux distros use pip)
+  const pip = (() => {
+    try { execSync('pip3 --version', { stdio: 'ignore' }); return 'pip3'; } catch (_) {}
+    try { execSync('pip --version', { stdio: 'ignore' }); return 'pip'; } catch (_) {}
+    throw new Error('Neither pip3 nor pip found. Install Python 3.9+ from https://python.org');
+  })();
+  logger.info(`Using ${pip} to install Python dependencies...`);
+  run(`${pip} install -r requirements.txt`, { cwd: 'boilerplate/mcp-backend' });
   logger.info('✅ Python dependencies installed');
-  logger.info('Installing AI Search upload dependencies...');
-  run('pip install azure-search-documents openai azure-identity --quiet');
+  run(`${pip} install azure-search-documents azure-identity --quiet`);
   logger.info('✅ All dependencies installed');
 });
 
@@ -45,7 +50,12 @@ task('dev', () => {
   logger.info('MCP endpoint:  http://localhost:8000/mcp');
   logger.info('PRM metadata:  http://localhost:8000/.well-known/oauth-protected-resource');
   logger.info('Press Ctrl+C to stop.');
-  run('python mcp_server.py', { cwd: 'boilerplate/mcp-backend' });
+  const python = (() => {
+    try { execSync('python3 --version', { stdio: 'ignore' }); return 'python3'; } catch (_) {}
+    try { execSync('python --version', { stdio: 'ignore' }); return 'python'; } catch (_) {}
+    throw new Error('Python 3.9+ not found. Install from https://python.org');
+  })();
+  run(`${python} mcp_server.py`, { cwd: 'boilerplate/mcp-backend' });
 });
 
 // 3. Run MCP server via PowerShell script (Windows-friendly)
@@ -72,7 +82,12 @@ task('upload-docs', () => {
   logger.info('Uploading TVA documents to Azure AI Search index...');
   logger.info('NOTE: Lab 1 uses Foundry Agent File Search (upload via Foundry portal).');
   logger.info('This task populates a separate AI Search index for custom connector use.');
-  run('python3 boilerplate/upload-docs.py');
+  const python = (() => {
+    try { execSync('python3 --version', { stdio: 'ignore' }); return 'python3'; } catch (_) {}
+    try { execSync('python --version', { stdio: 'ignore' }); return 'python'; } catch (_) {}
+    throw new Error('Python 3.9+ not found.');
+  })();
+  run(`${python} boilerplate/upload-docs.py`);
   logger.info('✅ Docs uploaded to tva-knowledge-base index');
 });
 
