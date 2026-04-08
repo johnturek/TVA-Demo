@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TVA Workshop — Microsoft Copilot Studio + Azure AI</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.css" id="theme">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css">
+  <style>
+    :root {
+      --tva-blue: #0078d4;
+      --tva-cyan: #00bcf2;
+      --tva-green: #7fba00;
+      --tva-amber: #ffb900;
+      --tva-red: #f25022;
+      --tva-dark: #1a1a2e;
+      --tva-darker: #0f0f1a;
+    }
+
+    .reveal {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    .reveal .slides section {
+      text-align: left;
+    }
+
+    .reveal h1, .reveal h2, .reveal h3 {
+      text-transform: none;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    .reveal h1 { font-size: 2.2em; }
+    .reveal h2 { font-size: 1.6em; color: var(--tva-cyan); }
+    .reveal h3 { font-size: 1.2em; color: var(--tva-green); }
+
+    /* Section divider slides */
+    .reveal .section-divider {
+      text-align: center;
+    }
+    .reveal .section-divider h2 {
+      font-size: 2.4em;
+      color: #fff;
+      margin-bottom: 0.3em;
+    }
+    .reveal .section-divider .subtitle {
+      font-size: 1.1em;
+      color: var(--tva-cyan);
+      font-weight: 300;
+    }
+    .reveal .section-divider .presenter {
+      margin-top: 1.5em;
+      font-size: 0.85em;
+      color: #888;
+    }
+
+    /* Title slide */
+    .reveal .title-slide {
+      text-align: center;
+    }
+    .reveal .title-slide h1 {
+      font-size: 2.6em;
+      background: linear-gradient(135deg, var(--tva-cyan), var(--tva-blue));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.2em;
+    }
+    .reveal .title-slide .event-info {
+      font-size: 1em;
+      color: #aaa;
+      margin-top: 1em;
+    }
+    .reveal .title-slide .tagline {
+      font-size: 1.15em;
+      color: var(--tva-green);
+      margin-top: 0.5em;
+      font-style: italic;
+    }
+
+    /* Architecture diagrams */
+    .arch-flow {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 1.2em 1.5em;
+      font-family: 'Cascadia Code', 'Fira Code', monospace;
+      font-size: 0.75em;
+      line-height: 1.8;
+      text-align: center;
+      margin: 0.8em 0;
+    }
+
+    /* Stat cards */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1em;
+      margin: 1em 0;
+    }
+    .stat-card {
+      background: linear-gradient(135deg, rgba(0,120,212,0.15), rgba(0,188,242,0.08));
+      border: 1px solid rgba(0,188,242,0.25);
+      border-radius: 10px;
+      padding: 1em 1.2em;
+      text-align: center;
+    }
+    .stat-card .number {
+      font-size: 2em;
+      font-weight: 700;
+      color: var(--tva-cyan);
+      display: block;
+    }
+    .stat-card .label {
+      font-size: 0.65em;
+      color: #aaa;
+      display: block;
+      margin-top: 0.3em;
+    }
+
+    /* Tables */
+    .reveal table {
+      font-size: 0.7em;
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0.8em 0;
+    }
+    .reveal table th {
+      background: rgba(0,120,212,0.3);
+      color: var(--tva-cyan);
+      padding: 0.5em 0.8em;
+      text-align: left;
+      font-weight: 600;
+    }
+    .reveal table td {
+      padding: 0.4em 0.8em;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .reveal table tr:hover td {
+      background: rgba(255,255,255,0.03);
+    }
+
+    /* Lists */
+    .reveal ul, .reveal ol {
+      font-size: 0.85em;
+      line-height: 1.7;
+    }
+    .reveal li {
+      margin-bottom: 0.3em;
+    }
+
+    /* Highlighted keywords */
+    .highlight {
+      color: var(--tva-cyan);
+      font-weight: 600;
+    }
+    .highlight-green {
+      color: var(--tva-green);
+      font-weight: 600;
+    }
+    .highlight-amber {
+      color: var(--tva-amber);
+      font-weight: 600;
+    }
+    .highlight-red {
+      color: var(--tva-red);
+      font-weight: 600;
+    }
+
+    /* Pill badges */
+    .pill {
+      display: inline-block;
+      padding: 0.15em 0.7em;
+      border-radius: 99px;
+      font-size: 0.7em;
+      font-weight: 600;
+      vertical-align: middle;
+      margin-right: 0.3em;
+    }
+    .pill-blue { background: var(--tva-blue); color: #fff; }
+    .pill-green { background: var(--tva-green); color: #1a1a2e; }
+    .pill-amber { background: var(--tva-amber); color: #1a1a2e; }
+    .pill-red { background: var(--tva-red); color: #fff; }
+
+    /* Two-column layout */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2em;
+      align-items: start;
+    }
+
+    /* Quote callout */
+    .callout {
+      border-left: 4px solid var(--tva-cyan);
+      padding: 0.8em 1.2em;
+      background: rgba(0,188,242,0.06);
+      border-radius: 0 8px 8px 0;
+      margin: 1em 0;
+      font-size: 0.85em;
+    }
+    .callout-green {
+      border-left-color: var(--tva-green);
+      background: rgba(127,186,0,0.06);
+    }
+
+    /* Code blocks */
+    .reveal pre {
+      font-size: 0.65em;
+      border-radius: 8px;
+      box-shadow: none;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    /* Checkpoint style */
+    .checkpoint {
+      background: linear-gradient(135deg, rgba(127,186,0,0.12), rgba(127,186,0,0.04));
+      border: 1px solid rgba(127,186,0,0.3);
+      border-radius: 10px;
+      padding: 1em 1.5em;
+      margin: 1em 0;
+    }
+    .checkpoint h3 {
+      margin-top: 0;
+    }
+
+    /* Timeline */
+    .timeline-item {
+      display: flex;
+      gap: 1em;
+      margin-bottom: 0.6em;
+      font-size: 0.8em;
+    }
+    .timeline-time {
+      min-width: 4em;
+      color: var(--tva-cyan);
+      font-weight: 600;
+      font-family: 'Cascadia Code', monospace;
+    }
+
+    /* Footer */
+    .slide-footer {
+      position: absolute;
+      bottom: 1em;
+      right: 1.5em;
+      font-size: 0.45em;
+      color: #555;
+    }
+
+    /* Decision tree */
+    .decision-tree {
+      font-family: 'Cascadia Code', 'Fira Code', monospace;
+      font-size: 0.6em;
+      line-height: 2;
+      background: rgba(255,255,255,0.03);
+      border-radius: 10px;
+      padding: 1em 1.5em;
+    }
+  </style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+
+<!-- ============================================================ -->
+<!-- TITLE SLIDE                                                   -->
+<!-- ============================================================ -->
+<section class="title-slide" data-background-gradient="radial-gradient(ellipse at center, #1a1a3e 0%, #0a0a1a 100%)">
+  <h1>TVA Workshop</h1>
+  <p style="font-size:1.3em; color:#ccc; margin-top:-0.3em;">Microsoft Copilot Studio + Azure AI</p>
+  <p class="tagline">Build a production-ready, Entra ID–secured AI agent — live in Azure by end of day.</p>
+  <p class="event-info">
+    April 15, 2026 &nbsp;·&nbsp; TVA HQ, Knoxville TN &nbsp;·&nbsp; 8-Hour Hands-On Workshop
+  </p>
+</section>
+
+<!-- ============================================================ -->
+<!-- AGENDA OVERVIEW                                               -->
+<!-- ============================================================ -->
+<section>
+  <h2>Today's Agenda</h2>
+  <div class="timeline-item"><span class="timeline-time">8:00</span> Arrival &amp; Environment Setup</div>
+  <div class="timeline-item"><span class="timeline-time">8:30</span> <span class="pill pill-blue">JT</span> Kickoff &amp; Executive Framing</div>
+  <div class="timeline-item"><span class="timeline-time">9:00</span> <span class="pill pill-green">Kevin</span> Session 1 — Azure AI Foundry</div>
+  <div class="timeline-item"><span class="timeline-time">9:30</span> <span class="pill pill-green">Kevin</span> Lab 1 — Hands-On Foundry Setup (90 min)</div>
+  <div class="timeline-item"><span class="timeline-time">11:15</span> <span class="pill pill-amber">Aaron</span> Session 2 — Copilot Studio</div>
+  <div class="timeline-item"><span class="timeline-time">11:45</span> <span class="pill pill-amber">Aaron</span> Lab 2 — Build the Agent (90 min)</div>
+  <div class="timeline-item"><span class="timeline-time">1:15</span> 🍽️ Lunch</div>
+  <div class="timeline-item"><span class="timeline-time">2:00</span> <span class="pill pill-blue">JT</span> Session 3 — APIM + MCP + Secure Auth</div>
+  <div class="timeline-item"><span class="timeline-time">2:30</span> <span class="pill pill-blue">JT</span> Lab 3 — Integration + Production Deploy (90 min)</div>
+  <div class="timeline-item"><span class="timeline-time">4:15</span> <span class="pill pill-red">All</span> Demo Showcase &amp; What You Built</div>
+  <div class="timeline-item"><span class="timeline-time">4:45</span> <span class="pill pill-blue">JT</span> Closing — Next Steps &amp; TVA Roadmap</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- WHAT YOU'LL BUILD                                             -->
+<!-- ============================================================ -->
+<section>
+  <h2>What You'll Build Today</h2>
+  <p>The <span class="highlight">TVA Document Processor</span> — an AI agent that:</p>
+  <ul>
+    <li>Answers questions about TVA regulatory docs &amp; NERC CIP compliance</li>
+    <li>Processes uploaded compliance reports via Azure AI Foundry RAG</li>
+    <li>Routes securely through Azure APIM with full user identity (OBO)</li>
+    <li>Runs on Azure Container Apps — production-grade, auto-scaling, shareable URL</li>
+  </ul>
+  <div class="arch-flow" style="margin-top:1.2em;">
+    You &nbsp;→&nbsp; Copilot Studio &nbsp;→&nbsp; APIM <span style="color:var(--tva-green)">(JWT validated)</span>
+    &nbsp;→&nbsp; Container Apps <span style="color:var(--tva-cyan)">(MCP Server)</span>
+    &nbsp;→&nbsp; Azure AI Foundry &nbsp;→&nbsp; TVA Knowledge Base
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- EXEC KICKOFF — SECTION DIVIDER                                -->
+<!-- ============================================================ -->
+<section class="section-divider" data-background-gradient="linear-gradient(135deg, #0a2a5e 0%, #0a0a1a 100%)">
+  <h2>Executive Kickoff</h2>
+  <p class="subtitle">AI isn't coming. It's here.<br>The question is: who leads?</p>
+  <p class="presenter">Presenter: JT</p>
+</section>
+
+<!-- EXEC: THE MOMENT -->
+<section>
+  <h2>The Moment We're In</h2>
+  <div class="two-col">
+    <div>
+      <p>TVA's scale demands AI:</p>
+      <ul>
+        <li><span class="highlight">49 dams</span></li>
+        <li><span class="highlight">3 nuclear plants</span></li>
+        <li><span class="highlight">29,000 miles</span> of transmission lines</li>
+        <li><span class="highlight">10 million</span> people served</li>
+        <li>NERC CIP compliance burden growing yearly</li>
+        <li>Institutional knowledge retiring with experienced engineers</li>
+      </ul>
+    </div>
+    <div>
+      <div class="callout">
+        Organizations that operationalize AI in the next 18 months will have a structural advantage in reliability, compliance speed, and workforce efficiency.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXEC: THE PROBLEM -->
+<section>
+  <h2>The Problem</h2>
+  <h3 style="color:var(--tva-amber);">"Your experts are answering the same question 40 times a week"</h3>
+  <ul>
+    <li>Compliance analysts spend <span class="highlight-amber">30–40%</span> of their time locating and cross-referencing documents</li>
+    <li>New engineers can't find answers buried in 10-year-old PDF filings</li>
+    <li>Audit prep cycles take <span class="highlight-amber">weeks</span> — most of that is document retrieval</li>
+    <li>River management decisions require synthesizing data from multiple siloed systems</li>
+  </ul>
+  <div class="callout" style="margin-top:1em;">
+    A top-quartile utility reduced compliance document review time by <span class="highlight-green">60%</span> using AI-assisted search. TVA's document corpus is larger — the upside is proportional.
+  </div>
+</section>
+
+<!-- EXEC: ROI -->
+<section>
+  <h2>Business Case &amp; ROI</h2>
+  <h3 style="color:var(--tva-green);">"This pays for itself before end of Q3"</h3>
+  <table>
+    <thead>
+      <tr><th>Metric</th><th>Current</th><th>With AI Agent</th><th>Delta</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Compliance doc review (hrs/analyst/wk)</td><td>12–15 hrs</td><td>4–5 hrs</td><td class="highlight-green">~65% ↓</td></tr>
+      <tr><td>Audit prep cycle (NERC CIP)</td><td>3–4 weeks</td><td>5–7 days</td><td class="highlight-green">~75% ↓</td></tr>
+      <tr><td>New hire time-to-productivity</td><td>6–9 months</td><td>3–4 months</td><td class="highlight-green">~50% faster</td></tr>
+      <tr><td>Regulatory question SLA</td><td>2–3 days</td><td>Same day</td><td class="highlight-green">~85% faster</td></tr>
+    </tbody>
+  </table>
+  <div class="stat-grid" style="margin-top:0.8em;">
+    <div class="stat-card">
+      <span class="number">$300K</span>
+      <span class="label">Recovered capacity / year<br>(10 analysts × 8 hrs/wk × $75/hr)</span>
+    </div>
+    <div class="stat-card">
+      <span class="number">12,500</span>
+      <span class="label">Hours reclaimed / year<br>(30 min/doc × 500 docs × 50 engineers)</span>
+    </div>
+  </div>
+</section>
+
+<!-- EXEC: ARCHITECTURE (BUSINESS VIEW) -->
+<section>
+  <h2>Architecture — Business View</h2>
+  <h3>Three layers. One secure pipeline.</h3>
+  <div class="arch-flow" style="font-size:0.85em; text-align:left; line-height:2.2;">
+    <span style="color:var(--tva-amber)">📄 Your Documents</span> &nbsp;→&nbsp; <span style="color:var(--tva-cyan)">🧠 AI Brain</span> &nbsp;→&nbsp; <span style="color:var(--tva-green)">👥 Your Teams</span><br>
+    &nbsp;&nbsp; NERC filings &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Azure AI &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Copilot agent<br>
+    &nbsp;&nbsp; Grid reports &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Foundry (RAG) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; in Teams / web<br>
+    &nbsp;&nbsp; NRC documents &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; via API
+  </div>
+  <div class="callout-green callout" style="margin-top:1em;">
+    <strong>Key message:</strong> This runs inside TVA's Microsoft tenant. Your data doesn't go to a public model endpoint. It stays inside the fence.
+  </div>
+</section>
+
+<!-- EXEC: SUCCESS PATH -->
+<section>
+  <h2>Pilot → Production in 90 Days</h2>
+  <div class="two-col">
+    <div>
+      <h3>Phase 1 — Foundation <span class="pill pill-green">Days 1–30</span></h3>
+      <ul style="font-size:0.8em;">
+        <li>Azure AI Foundry project stood up</li>
+        <li>TVA document corpus indexed</li>
+        <li>Working agent in Copilot Studio</li>
+      </ul>
+      <h3>Phase 2 — Pilot <span class="pill pill-amber">Days 31–60</span></h3>
+      <ul style="font-size:0.8em;">
+        <li>10–15 power users testing</li>
+        <li>Feedback loop on answer quality</li>
+        <li>Expand document corpus</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Phase 3 — Production <span class="pill pill-blue">Days 61–90</span></h3>
+      <ul style="font-size:0.8em;">
+        <li>Teams integration deployed</li>
+        <li>API connected to existing TVA systems</li>
+        <li>SLA and monitoring in place</li>
+      </ul>
+      <div class="callout" style="margin-top:1.5em;">
+        <strong>Success metrics:</strong><br>
+        Time-to-answer · Analyst satisfaction · Retrieval accuracy · Audit prep duration
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXEC: THE ASK -->
+<section>
+  <h2>The Ask</h2>
+  <h3 style="color:var(--tva-amber);">Three things. That's all.</h3>
+  <ol style="font-size:0.95em; line-height:2;">
+    <li><strong>Stay engaged today</strong> — your presence signals this matters</li>
+    <li><strong>Identify 2 pilot champions</strong> — one from compliance, one from grid ops</li>
+    <li><strong>Decision in 30 days</strong> — greenlight the 90-day pilot</li>
+  </ol>
+  <div class="callout-green callout" style="margin-top:1.5em; text-align:center; font-size:0.95em;">
+    <em>"TVA's mission is power — literally. This is how we make sure the people doing that work spend their time on the hard problems, not hunting through PDFs."</em>
+  </div>
+</section>
+
+<!-- TECH ARCHITECTURE OVERVIEW -->
+<section>
+  <h2>Architecture — Technical View</h2>
+  <div class="arch-flow" style="font-size:0.7em; text-align:left; line-height:2;">
+    User<br>
+    &nbsp;&nbsp;│<br>
+    &nbsp;&nbsp;▼<br>
+    <span style="color:var(--tva-cyan)">Copilot Studio Agent</span> &nbsp;(Entra ID SSO — user identity forwarded)<br>
+    &nbsp;&nbsp;│<br>
+    &nbsp;&nbsp;▼<br>
+    <span style="color:var(--tva-green)">Azure APIM</span> ──── JWT validation · CORS · Rate limiting<br>
+    &nbsp;&nbsp;│<br>
+    &nbsp;&nbsp;▼<br>
+    <span style="color:var(--tva-amber)">Azure Container Apps</span> &nbsp;(MCP Server — always-on, auto-scaling, HTTPS)<br>
+    &nbsp;&nbsp;│<br>
+    &nbsp;&nbsp;▼<br>
+    <span style="color:var(--tva-blue)">Azure AI Foundry</span> + TVA Knowledge Base (Azure AI Search)
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SESSION 1 — AZURE AI FOUNDRY                                  -->
+<!-- ============================================================ -->
+<section class="section-divider" data-background-gradient="linear-gradient(135deg, #0a3d0a 0%, #0a0a1a 100%)">
+  <h2>Session 1</h2>
+  <p class="subtitle">Azure AI Foundry</p>
+  <p class="presenter">Presenter: Kevin</p>
+</section>
+
+<section>
+  <h2>What Is Azure AI Foundry?</h2>
+  <div class="two-col">
+    <div>
+      <p>Microsoft's <span class="highlight">unified AI platform</span> for building enterprise AI applications.</p>
+      <ul>
+        <li>Hub → Project → Deployments architecture</li>
+        <li>Managed model hosting (GPT-4o, embeddings)</li>
+        <li>Built-in vector search &amp; RAG pipeline</li>
+        <li>Agent Service for conversational AI</li>
+      </ul>
+    </div>
+    <div>
+      <h3>When to use what?</h3>
+      <table>
+        <tr><td><strong>AI Foundry</strong></td><td>Full AI apps with agents &amp; RAG</td></tr>
+        <tr><td><strong>Azure OpenAI</strong></td><td>Direct model API calls</td></tr>
+        <tr><td><strong>AI Search</strong></td><td>Standalone search/index</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>RAG Architecture</h2>
+  <h3>How the knowledge base works</h3>
+  <div class="arch-flow" style="font-size:0.8em;">
+    📄 TVA Documents &nbsp;→&nbsp; <span style="color:var(--tva-amber)">Chunk</span>
+    &nbsp;→&nbsp; <span style="color:var(--tva-cyan)">Embed</span>
+    &nbsp;→&nbsp; <span style="color:var(--tva-blue)">Index</span>
+    &nbsp;→&nbsp; <span style="color:var(--tva-green)">Retrieve</span>
+    &nbsp;→&nbsp; <span style="color:var(--tva-amber)">Augment</span>
+    &nbsp;→&nbsp; <span style="color:var(--tva-cyan)">Generate</span>
+  </div>
+  <div class="two-col" style="margin-top:1em;">
+    <div>
+      <h3>TVA Document Corpus</h3>
+      <ul>
+        <li>NERC CIP-007 — Patch Management</li>
+        <li>NERC CIP-010 — Configuration Mgmt</li>
+        <li>Grid Reliability Annual Report</li>
+        <li>Nuclear Safety Procedures</li>
+        <li>Regulatory Variance Process</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Why RAG, not fine-tuning?</h3>
+      <ul>
+        <li>Documents change — no retraining needed</li>
+        <li>Citations trace back to source</li>
+        <li>Data stays in your tenant</li>
+        <li>Lower cost, faster iteration</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- LAB 1 OVERVIEW -->
+<section>
+  <h2><span class="pill pill-green">Lab 1</span> Azure AI Foundry Setup</h2>
+  <h3>90 minutes — Hands-on</h3>
+  <table>
+    <thead><tr><th>Time</th><th>Task</th></tr></thead>
+    <tbody>
+      <tr><td>0–20 min</td><td>Create Foundry project, confirm model deployments</td></tr>
+      <tr><td>20–45 min</td><td>Upload TVA documents, create vector index</td></tr>
+      <tr><td>45–75 min</td><td>Test RAG in Foundry playground</td></tr>
+      <tr><td>75–90 min</td><td>Copy endpoint URLs &amp; keys for Lab 2</td></tr>
+    </tbody>
+  </table>
+  <div class="checkpoint" style="margin-top:1em;">
+    <h3>✅ Lab 1 Checkpoint</h3>
+    <ul style="font-size:0.75em;">
+      <li>Foundry project created &amp; accessible</li>
+      <li>TVA docs uploaded and processed</li>
+      <li>Agent queries return document-cited answers</li>
+      <li>Endpoint URLs &amp; keys saved to <code>.env</code></li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <h2>Lab 1 — Key Concepts</h2>
+  <div class="two-col">
+    <div>
+      <h3>⚠️ SDK Deprecation Notice</h3>
+      <p style="font-size:0.8em;">The classic Agents API (v1.x — threads/messages/runs) is <span class="highlight-red">deprecated</span>.</p>
+      <p style="font-size:0.8em;">This lab uses the <span class="highlight-green">new Agents SDK (v2.x)</span> with Conversations/Responses pattern.</p>
+      <pre><code class="language-bash">pip install "azure-ai-projects>=2.0.0"</code></pre>
+    </div>
+    <div>
+      <h3>New Foundry Portal</h3>
+      <p style="font-size:0.8em;">Microsoft rebranded to <span class="highlight">Microsoft Foundry</span> in early 2026.</p>
+      <ul style="font-size:0.75em;">
+        <li>Portal still at <code>ai.azure.com</code></li>
+        <li>Click <strong>"New Foundry"</strong> toggle</li>
+        <li>Hub-based projects = "classic"</li>
+        <li>Use Foundry resource directly</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- EXEC TAKEAWAY: Lab 1 -->
+<section>
+  <h2>Executive Takeaway — Lab 1</h2>
+  <div class="callout" style="font-size:1.1em; text-align:center;">
+    TVA's compliance documents are now <span class="highlight">searchable by AI in plain English</span>.<br><br>
+    An engineer asking <em>"what are our patch requirements?"</em> gets an <span class="highlight-green">instant, cited answer</span> instead of searching through 200-page PDFs.<br><br>
+    This is the foundation everything else builds on.
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SESSION 2 — COPILOT STUDIO                                    -->
+<!-- ============================================================ -->
+<section class="section-divider" data-background-gradient="linear-gradient(135deg, #3d2a0a 0%, #0a0a1a 100%)">
+  <h2>Session 2</h2>
+  <p class="subtitle">Microsoft Copilot Studio</p>
+  <p class="presenter">Presenter: Aaron</p>
+</section>
+
+<section>
+  <h2>Copilot Studio — Agent Anatomy</h2>
+  <div class="two-col">
+    <div>
+      <h3>Core Components</h3>
+      <ul>
+        <li><span class="highlight">Topics</span> — conversation flows</li>
+        <li><span class="highlight">Actions</span> — HTTP calls, connectors</li>
+        <li><span class="highlight">Knowledge</span> — data sources</li>
+        <li><span class="highlight">Triggers</span> — phrase matching</li>
+        <li><span class="highlight">Tools</span> — MCP, plugins</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Why NOT native SharePoint knowledge?</h3>
+      <ul>
+        <li>Need richer RAG control</li>
+        <li>Structured output requirements</li>
+        <li>Auth model (OBO) for compliance</li>
+        <li>Custom connector to Foundry</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Authentication Models</h2>
+  <h3>Maker Credentials vs. OBO (On-Behalf-Of)</h3>
+  <table>
+    <thead><tr><th></th><th>Maker Credentials</th><th>User Credentials (OBO)</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Who authenticates</strong></td><td>The agent (service principal)</td><td>The end user</td></tr>
+      <tr><td><strong>Best for</strong></td><td>Internal tools, read-only</td><td>Sensitive data, audit trails</td></tr>
+      <tr><td><strong>Setup complexity</strong></td><td>Low</td><td>Medium–High</td></tr>
+      <tr><td><strong>Government use</strong></td><td>Demos only</td><td><span class="highlight-green">Required for production</span></td></tr>
+      <tr><td><strong>TVA use case</strong></td><td>Workshop demos</td><td>Production NERC CIP queries</td></tr>
+    </tbody>
+  </table>
+  <div class="callout" style="margin-top:0.8em; font-size:0.8em;">
+    <strong>GCC Note:</strong> Dataverse connector is currently broken in GCC tenants. Use HTTP Request nodes directly — it's actually the more portable pattern.
+  </div>
+</section>
+
+<!-- LAB 2 OVERVIEW -->
+<section>
+  <h2><span class="pill pill-amber">Lab 2</span> Build the Document Processor Agent</h2>
+  <h3>90 minutes — Hands-on</h3>
+  <table>
+    <thead><tr><th>Time</th><th>Task</th></tr></thead>
+    <tbody>
+      <tr><td>0–15 min</td><td>Create agent, configure system prompt</td></tr>
+      <tr><td>15–35 min</td><td>Build intake topic + file upload flow</td></tr>
+      <tr><td>35–60 min</td><td>Create custom connector to Foundry endpoint</td></tr>
+      <tr><td>60–80 min</td><td>Wire connector into agent action</td></tr>
+      <tr><td>80–90 min</td><td>End-to-end test + debug</td></tr>
+    </tbody>
+  </table>
+  <div class="checkpoint" style="margin-top:1em;">
+    <h3>✅ Lab 2 Checkpoint</h3>
+    <ul style="font-size:0.75em;">
+      <li>Agent created with TVA system prompt</li>
+      <li>Document Search topic calls Foundry Agent</li>
+      <li>File upload works — sample doc produces summary</li>
+      <li>3+ conversations tested in Test panel</li>
+    </ul>
+  </div>
+</section>
+
+<!-- EXEC TAKEAWAY: Lab 2 -->
+<section>
+  <h2>Executive Takeaway — Lab 2</h2>
+  <div class="callout" style="font-size:1.1em; text-align:center;">
+    What was just built: a <span class="highlight">virtual compliance expert</span> that any TVA engineer can talk to in plain English.<br><br>
+    It reads the same documents your team uses, answers instantly, and cites exactly where the answer came from.<br><br>
+    This is what replaces <span class="highlight-amber">45-minute searches through SharePoint</span>.
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SESSION 3 — APIM + MCP                                        -->
+<!-- ============================================================ -->
+<section class="section-divider" data-background-gradient="linear-gradient(135deg, #0a0a3d 0%, #0a0a1a 100%)">
+  <h2>Session 3</h2>
+  <p class="subtitle">APIM + MCP + Secure Auth</p>
+  <p class="presenter">Presenter: JT</p>
+</section>
+
+<section>
+  <h2>Why APIM?</h2>
+  <h3>The enterprise security layer</h3>
+  <div class="two-col">
+    <div>
+      <ul>
+        <li><span class="highlight">Auth validation</span> — JWT token verification</li>
+        <li><span class="highlight">Rate limiting</span> — protect backend resources</li>
+        <li><span class="highlight">Backend abstraction</span> — swap implementations</li>
+        <li><span class="highlight">Logging &amp; analytics</span> — full audit trail</li>
+        <li><span class="highlight">CORS</span> — controlled cross-origin access</li>
+      </ul>
+    </div>
+    <div>
+      <div class="callout">
+        APIM sits between Copilot Studio and your backend — every request is authenticated, logged, and rate-limited. No direct backend exposure.
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>MCP — Model Context Protocol</h2>
+  <h3>Structured tools for agent interoperability</h3>
+  <div class="two-col">
+    <div>
+      <p>MCP lets your agent call <span class="highlight">structured tools</span> instead of free-form HTTP.</p>
+      <h3>Workshop MCP Tools</h3>
+      <ul>
+        <li><code>help</code> — list all tools &amp; usage</li>
+        <li><code>get_my_profile</code> — OBO demo (Graph API)</li>
+        <li><code>analyze_policy</code> — compliance questions</li>
+      </ul>
+    </div>
+    <div>
+      <div class="callout" style="border-left-color:var(--tva-red);">
+        🚨 <strong>Transport Warning:</strong><br>
+        Copilot Studio dropped SSE transport support. MCP servers <strong>must</strong> use <span class="highlight-red">Streamable HTTP</span> transport.
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>OBO Token Flow</h2>
+  <h3>User identity end-to-end</h3>
+  <div class="arch-flow" style="font-size:0.8em; text-align:left; line-height:2.2;">
+    User &nbsp;→&nbsp; <span style="color:var(--tva-cyan)">Copilot Studio</span> &nbsp;→&nbsp; [user token] &nbsp;→&nbsp; <span style="color:var(--tva-green)">APIM</span> &nbsp;→&nbsp; [OBO exchange] &nbsp;→&nbsp; <span style="color:var(--tva-amber)">Backend API</span><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↑<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Token validation + user context
+  </div>
+  <div class="two-col" style="margin-top:1em;">
+    <div>
+      <h3>Why OBO matters for TVA</h3>
+      <ul>
+        <li><span class="highlight-amber">Audit trail</span> — NERC CIP requires logging who accessed compliance data</li>
+        <li><span class="highlight-amber">Role-based access</span> — nuclear vs. grid clearance levels</li>
+        <li><span class="highlight-amber">User context</span> — personalized to user's division</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Production auth config</h3>
+      <ul style="font-size:0.8em;">
+        <li>Entra ID V2 + federated credentials (secret-less)</li>
+        <li><code>validate-azure-ad-token</code> APIM policy</li>
+        <li>Require users to sign in</li>
+        <li>Token refresh for long sessions</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>When to Use What</h2>
+  <div class="decision-tree">
+    User needs info from a document/knowledge base?<br>
+    &nbsp;&nbsp;└── <span style="color:var(--tva-green)">YES → Use Knowledge Source</span> (AI Search + Foundry)<br><br>
+    User needs to trigger an action or workflow?<br>
+    &nbsp;&nbsp;└── YES → Is the action a well-defined tool with a schema?<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── <span style="color:var(--tva-cyan)">YES → Use MCP</span> (model picks the right tool)<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── <span style="color:var(--tva-amber)">NO → Use Agent Flow / HTTP Action</span><br><br>
+    Multiple specialized agents needed?<br>
+    &nbsp;&nbsp;├── <span style="color:var(--tva-blue)">YES → Sub-agent model</span> (orchestrator + specialists)<br>
+    &nbsp;&nbsp;└── NO → Keep it in one agent with topics
+  </div>
+</section>
+
+<!-- LAB 3 OVERVIEW -->
+<section>
+  <h2><span class="pill pill-blue">Lab 3</span> APIM + MCP + Production Deploy</h2>
+  <h3>90 minutes — Hands-on</h3>
+  <table>
+    <thead><tr><th>Time</th><th>Task</th></tr></thead>
+    <tbody>
+      <tr><td>0–20 min</td><td>Deploy Docker MCP server, confirm it's running</td></tr>
+      <tr><td>20–40 min</td><td>Configure APIM: create API, JWT validation policy</td></tr>
+      <tr><td>40–65 min</td><td>Update Copilot Studio → APIM endpoint + OAuth</td></tr>
+      <tr><td>65–80 min</td><td>Test OBO flow end-to-end</td></tr>
+      <tr><td>80–90 min</td><td>Production deploy to Azure Container Apps</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <h2>Production Architecture</h2>
+  <h3>What you deploy in Lab 3</h3>
+  <div class="arch-flow" style="font-size:0.7em; text-align:left; line-height:2.2;">
+    User<br>
+    &nbsp;&nbsp;│<br>
+    &nbsp;&nbsp;▼<br>
+    <span style="color:var(--tva-cyan)">Copilot Studio Agent</span><br>
+    &nbsp;&nbsp;│ &nbsp;(Entra ID SSO — user identity forwarded)<br>
+    &nbsp;&nbsp;▼<br>
+    <span style="color:var(--tva-green)">Azure APIM</span> ──── <code>validate-azure-ad-token</code> policy<br>
+    &nbsp;&nbsp;│ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;──── CORS policy<br>
+    &nbsp;&nbsp;│ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;──── Rate limiting<br>
+    &nbsp;&nbsp;▼<br>
+    <span style="color:var(--tva-amber)">Azure Container Apps</span> (TVA MCP Server)<br>
+    &nbsp;&nbsp;│ &nbsp;(always-on, auto-scaling, HTTPS)<br>
+    &nbsp;&nbsp;▼<br>
+    <span style="color:var(--tva-blue)">TVA Knowledge Base</span> (Azure AI Search + AI Foundry)
+  </div>
+</section>
+
+<section>
+  <h2>Deploy to Production</h2>
+  <h3>One command. ~15 minutes.</h3>
+  <pre><code class="language-bash">cd ~/TVA-Demo
+npx just workshop:ship</code></pre>
+  <p style="font-size:0.85em;">This automatically:</p>
+  <ol style="font-size:0.8em;">
+    <li>Creates Entra ID app registration with correct API permissions</li>
+    <li>Builds &amp; pushes MCP server to Azure Container Registry</li>
+    <li>Deploys MCP server as a Container App (HTTPS endpoint)</li>
+    <li>Provisions APIM with JWT validation policy</li>
+    <li>Outputs all values needed for Copilot Studio</li>
+  </ol>
+  <div class="checkpoint" style="margin-top:0.8em;">
+    <h3>✅ Lab 3 Checkpoint</h3>
+    <ul style="font-size:0.75em;">
+      <li>Production MCP endpoint responds to authenticated requests</li>
+      <li>Copilot Studio agent points to production endpoint</li>
+      <li>End-to-end demo conversation works against live Azure backend</li>
+    </ul>
+  </div>
+</section>
+
+<!-- EXEC TAKEAWAY: Lab 3 -->
+<section>
+  <h2>Executive Takeaway — Lab 3</h2>
+  <div class="callout" style="font-size:1em; text-align:center;">
+    This is the pattern every government AI deployment should follow:<br><br>
+    The user talks to Copilot in plain English → Copilot routes to the right system through a <span class="highlight">secure API gateway</span> → every request is logged with the <span class="highlight-green">user's identity</span>.<br><br>
+    TVA's compliance team gets AI capability without compromising the audit controls <span class="highlight-amber">NERC CIP requires</span>.
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- DEMO SHOWCASE                                                 -->
+<!-- ============================================================ -->
+<section class="section-divider" data-background-gradient="linear-gradient(135deg, #2a0a3d 0%, #0a0a1a 100%)">
+  <h2>Demo Showcase</h2>
+  <p class="subtitle">What You Built Today</p>
+  <p class="presenter">All Presenters</p>
+</section>
+
+<section>
+  <h2>End-to-End Demo Script</h2>
+  <ol style="font-size:0.85em; line-height:2;">
+    <li>
+      <strong>"What are TVA's patch management requirements under NERC CIP-007?"</strong><br>
+      <span style="color:#888; font-size:0.85em;">→ MCP tool call → structured answer with citations</span>
+    </li>
+    <li>
+      <strong>Upload <code>tva-compliance-report-q1.pdf</code></strong> → "Review this for compliance gaps"<br>
+      <span style="color:#888; font-size:0.85em;">→ File processed → Azure AI Foundry → gap analysis</span>
+    </li>
+    <li>
+      <strong>"Search for documents about Browns Ferry nuclear plant procedures"</strong><br>
+      <span style="color:#888; font-size:0.85em;">→ APIM backend → document list with metadata</span>
+    </li>
+    <li>
+      <strong>"Summarize the top 3 risks"</strong><br>
+      <span style="color:#888; font-size:0.85em;">→ Conversation context → prioritized risk summary</span>
+    </li>
+  </ol>
+</section>
+
+<!-- ============================================================ -->
+<!-- CLOSING                                                       -->
+<!-- ============================================================ -->
+<section class="section-divider" data-background-gradient="linear-gradient(135deg, #0a2a5e 0%, #0a0a1a 100%)">
+  <h2>Closing</h2>
+  <p class="subtitle">Next Steps &amp; TVA Roadmap</p>
+  <p class="presenter">Presenter: JT</p>
+</section>
+
+<section>
+  <h2>What TVA Owns Right Now</h2>
+  <div class="stat-grid">
+    <div class="stat-card">
+      <span class="number">✅</span>
+      <span class="label">Production-ready AI Agent<br>Entra ID–secured, auto-scaling</span>
+    </div>
+    <div class="stat-card">
+      <span class="number">✅</span>
+      <span class="label">Knowledge Base<br>TVA docs indexed &amp; searchable</span>
+    </div>
+    <div class="stat-card">
+      <span class="number">✅</span>
+      <span class="label">Secure API Gateway<br>APIM + JWT + OBO</span>
+    </div>
+    <div class="stat-card">
+      <span class="number">✅</span>
+      <span class="label">MCP Server<br>Structured tools for compliance</span>
+    </div>
+  </div>
+  <div class="callout-green callout" style="margin-top:1em; text-align:center;">
+    A production-ready, Entra ID–secured, auto-scaling AI agent connected to TVA's own knowledge base — deployed in Azure, accessible from Teams, and <span class="highlight-green">ready for real users</span>.
+  </div>
+</section>
+
+<section>
+  <h2>Next Steps</h2>
+  <div class="two-col">
+    <div>
+      <h3>Immediate (This Week)</h3>
+      <ul>
+        <li>Identify 2 pilot champions</li>
+        <li>Define first production use case</li>
+        <li>Begin GCC migration planning</li>
+      </ul>
+      <h3>30-Day Horizon</h3>
+      <ul>
+        <li>Greenlight 90-day pilot</li>
+        <li>Expand document corpus</li>
+        <li>10–15 power users onboarded</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Resources</h3>
+      <ul style="font-size:0.8em;">
+        <li>Workshop repo: <code>github.com/johnturek/TVA-Demo</code></li>
+        <li>Azure AI Foundry docs</li>
+        <li>Copilot Studio docs</li>
+        <li>APIM + Entra ID docs</li>
+      </ul>
+      <h3>Follow-Up Options</h3>
+      <ul style="font-size:0.8em;">
+        <li>Deeper architecture review</li>
+        <li>Production pilot engagement</li>
+        <li>CoE (Center of Excellence) setup</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="title-slide" data-background-gradient="radial-gradient(ellipse at center, #1a1a3e 0%, #0a0a1a 100%)">
+  <h1 style="font-size:2em;">Thank You</h1>
+  <p style="font-size:1.2em; color:#ccc;">Questions? Contact JT or open an issue in the repo.</p>
+  <p style="margin-top:2em; color:#666; font-size:0.8em;">
+    github.com/johnturek/TVA-Demo
+  </p>
+</section>
+
+</div><!-- .slides -->
+</div><!-- .reveal -->
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+<script>
+  Reveal.initialize({
+    hash: true,
+    slideNumber: 'c/t',
+    width: 1280,
+    height: 720,
+    margin: 0.08,
+    transition: 'slide',
+    transitionSpeed: 'default',
+    backgroundTransition: 'fade',
+    center: false,
+    plugins: [RevealHighlight, RevealNotes]
+  });
+</script>
+</body>
+</html>

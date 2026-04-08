@@ -213,3 +213,18 @@ task('clean', () => {
   logger.info('Local containers stopped.');
   logger.info('To delete ALL Azure resources: az group delete --name mcp-workshop-rg --yes');
 });
+
+// 17. Open workshop slides in default browser
+task('slides', () => {
+  const slidesPath = path.resolve('slides/index.html');
+  if (!fs.existsSync(slidesPath)) {
+    logger.error('slides/index.html not found');
+    process.exit(1);
+  }
+  const opener = process.platform === 'darwin' ? 'open'
+    : process.platform === 'win32' ? 'start'
+    : 'xdg-open';
+  run(`${opener} "${slidesPath}"`);
+  logger.info('✅ Slides opened in browser');
+  logger.info('💡 Use arrow keys to navigate, F for fullscreen, S for speaker view');
+});

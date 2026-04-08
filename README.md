@@ -61,6 +61,7 @@ This repo uses [`just-task`](https://github.com/microsoft/just) — Microsoft's 
 | `npx just workshop:start` | Full Lab 1+2 setup |
 | `npx just workshop:ship` | End-of-day: provision Azure (walkthrough) + verify production |
 | `npx just clean` | Stop containers, remove volumes |
+| `npx just slides` | Open workshop slides in browser |
 
 > **Workshop tip:** Use `npx just provision:teach` for Lab 3 — it pauses at each step with explanations so participants understand what's being deployed.
 
@@ -155,6 +156,9 @@ TVA-Demo/
 │   ├── tva-grid-reliability.txt
 │   ├── nuclear-safety-overview.txt
 │   └── regulatory-variance-process.txt
+│
+├── slides/                 # Reveal.js presentation slides
+│   └── index.html              # Full workshop slide deck (open in browser)
 │
 └── workshop/               # Workshop materials
     ├── agenda.md
