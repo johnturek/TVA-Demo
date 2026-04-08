@@ -323,11 +323,11 @@
   <div class="mermaid-wrap" style="margin-top:1.2em;">
     <pre class="mermaid">
 flowchart LR
-  A["👤 You"] --> B["Copilot\nStudio"]
-  B --> C["Azure\nAPIM"]
-  C --> D["Container Apps\n(MCP Server)"]
-  D --> E["Azure AI\nFoundry"]
-  E --> F["TVA Knowledge\nBase"]
+  A["👤 You"] --> B["Copilot&lt;br/&gt;Studio"]
+  B --> C["Azure&lt;br/&gt;APIM"]
+  C --> D["Container Apps&lt;br/&gt;(MCP Server)"]
+  D --> E["Azure AI&lt;br/&gt;Foundry"]
+  E --> F["TVA Knowledge&lt;br/&gt;Base"]
 
   style A fill:#0078d4,stroke:#0078d4,color:#fff
   style B fill:#0078d4,stroke:#005a9e,color:#fff
@@ -427,10 +427,10 @@ flowchart LR
     D4["River mgmt data"]
   end
   subgraph brain ["🧠 AI Brain"]
-    B1["Azure AI\nFoundry (RAG)"]
+    B1["Azure AI&lt;br/&gt;Foundry (RAG)"]
   end
   subgraph teams ["👥 Your Teams"]
-    T1["Copilot agent\nin Teams / web"]
+    T1["Copilot agent&lt;br/&gt;in Teams / web"]
     T2["via API"]
   end
 
@@ -506,13 +506,13 @@ flowchart LR
   <div class="mermaid-wrap">
     <pre class="mermaid">
 flowchart TD
-  A["👤 User"] --> B["Copilot Studio Agent\n(Entra ID SSO)"]
+  A["👤 User"] --> B["Copilot Studio Agent&lt;br/&gt;(Entra ID SSO)"]
   B -->|"user identity forwarded"| C["Azure APIM"]
   C --> C1["JWT validation"]
   C --> C2["CORS"]
   C --> C3["Rate limiting"]
-  C --> D["Azure Container Apps\n(MCP Server)"]
-  D -->|"always-on · auto-scaling · HTTPS"| E["Azure AI Foundry\n+ TVA Knowledge Base"]
+  C --> D["Azure Container Apps&lt;br/&gt;(MCP Server)"]
+  D -->|"always-on · auto-scaling · HTTPS"| E["Azure AI Foundry&lt;br/&gt;+ TVA Knowledge Base"]
 
   style A fill:#0078d4,stroke:#005a9e,color:#fff
   style B fill:#00bcf2,stroke:#0090bf,color:#1a1a2e
@@ -564,7 +564,7 @@ flowchart TD
   <div class="mermaid-wrap">
     <pre class="mermaid">
 flowchart LR
-  A["📄 TVA\nDocuments"] --> B["Chunk"]
+  A["📄 TVA&lt;br/&gt;Documents"] --> B["Chunk"]
   B --> C["Embed"]
   C --> D["Index"]
   D --> E["Retrieve"]
@@ -811,7 +811,7 @@ sequenceDiagram
 
   U->>CS: Ask question
   CS->>APIM: Forward request + user token
-  Note over APIM: validate-azure-ad-token<br/>JWT audience & issuer check
+  Note over APIM: validate-azure-ad-token&lt;br/&gt;JWT audience &amp; issuer check
   APIM->>APIM: OBO token exchange
   APIM->>BE: Request + OBO token + user context
   BE-->>APIM: Response
@@ -845,13 +845,13 @@ sequenceDiagram
   <div class="mermaid-wrap mermaid-lg">
     <pre class="mermaid">
 flowchart TD
-  Q1{"User needs info from\na knowledge base?"} -->|YES| A1["✅ Knowledge Source\n(AI Search + Foundry)"]
-  Q1 -->|NO| Q2{"Trigger an action\nor workflow?"}
-  Q2 -->|YES| Q3{"Well-defined tool\nwith a schema?"}
-  Q2 -->|NO| Q4{"Multiple specialized\nagents needed?"}
-  Q3 -->|YES| A2["✅ Use MCP\n(model picks the right tool)"]
-  Q3 -->|NO| A3["✅ Agent Flow / HTTP Action\n(more control)"]
-  Q4 -->|YES| A4["✅ Sub-agent model\n(orchestrator + specialists)"]
+  Q1{"User needs info from&lt;br/&gt;a knowledge base?"} -->|YES| A1["✅ Knowledge Source&lt;br/&gt;(AI Search + Foundry)"]
+  Q1 -->|NO| Q2{"Trigger an action&lt;br/&gt;or workflow?"}
+  Q2 -->|YES| Q3{"Well-defined tool&lt;br/&gt;with a schema?"}
+  Q2 -->|NO| Q4{"Multiple specialized&lt;br/&gt;agents needed?"}
+  Q3 -->|YES| A2["✅ Use MCP&lt;br/&gt;(model picks the right tool)"]
+  Q3 -->|NO| A3["✅ Agent Flow / HTTP Action&lt;br/&gt;(more control)"]
+  Q4 -->|YES| A4["✅ Sub-agent model&lt;br/&gt;(orchestrator + specialists)"]
   Q4 -->|NO| A5["✅ One agent with topics"]
 
   style Q1 fill:#0078d4,stroke:#005a9e,color:#fff
@@ -890,12 +890,12 @@ flowchart TD
     <pre class="mermaid">
 flowchart TD
   A["👤 User"] --> B["Copilot Studio Agent"]
-  B -->|"Entra ID SSO\nuser identity forwarded"| C["Azure APIM"]
+  B -->|"Entra ID SSO&lt;br/&gt;user identity forwarded"| C["Azure APIM"]
   C --- P1["validate-azure-ad-token policy"]
   C --- P2["CORS policy"]
   C --- P3["Rate limiting"]
-  C --> D["Azure Container Apps\n(TVA MCP Server)"]
-  D -->|"always-on · auto-scaling · HTTPS"| E["TVA Knowledge Base\n(Azure AI Search + AI Foundry)"]
+  C --> D["Azure Container Apps&lt;br/&gt;(TVA MCP Server)"]
+  D -->|"always-on · auto-scaling · HTTPS"| E["TVA Knowledge Base&lt;br/&gt;(Azure AI Search + AI Foundry)"]
 
   style A fill:#0078d4,stroke:#005a9e,color:#fff
   style B fill:#00bcf2,stroke:#0090bf,color:#1a1a2e
@@ -1059,6 +1059,7 @@ npx just workshop:ship</code></pre>
 <script>
   mermaid.initialize({
     startOnLoad: false,
+    securityLevel: 'loose',
     theme: 'dark',
     themeVariables: {
       darkMode: true,
