@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.css" id="theme">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
   <style>
     :root {
       --tva-blue: #0078d4;
@@ -80,7 +81,7 @@
       font-style: italic;
     }
 
-    /* Architecture diagrams */
+    /* Architecture diagrams (legacy text) */
     .arch-flow {
       background: rgba(255,255,255,0.05);
       border: 1px solid rgba(255,255,255,0.1);
@@ -92,6 +93,19 @@
       text-align: center;
       margin: 0.8em 0;
     }
+
+    /* Mermaid diagram containers */
+    .mermaid-wrap {
+      display: flex;
+      justify-content: center;
+      margin: 0.8em 0;
+    }
+    .mermaid-wrap .mermaid {
+      width: 100%;
+      max-width: 1100px;
+    }
+    .mermaid-wrap.mermaid-sm .mermaid { max-width: 800px; }
+    .mermaid-wrap.mermaid-lg .mermaid { max-width: 1200px; }
 
     /* Stat cards */
     .stat-grid {
@@ -306,10 +320,22 @@
     <li>Routes securely through Azure APIM with full user identity (OBO)</li>
     <li>Runs on Azure Container Apps — production-grade, auto-scaling, shareable URL</li>
   </ul>
-  <div class="arch-flow" style="margin-top:1.2em;">
-    You &nbsp;→&nbsp; Copilot Studio &nbsp;→&nbsp; APIM <span style="color:var(--tva-green)">(JWT validated)</span>
-    &nbsp;→&nbsp; Container Apps <span style="color:var(--tva-cyan)">(MCP Server)</span>
-    &nbsp;→&nbsp; Azure AI Foundry &nbsp;→&nbsp; TVA Knowledge Base
+  <div class="mermaid-wrap" style="margin-top:1.2em;">
+    <pre class="mermaid">
+flowchart LR
+  A["👤 You"] --> B["Copilot\nStudio"]
+  B --> C["Azure\nAPIM"]
+  C --> D["Container Apps\n(MCP Server)"]
+  D --> E["Azure AI\nFoundry"]
+  E --> F["TVA Knowledge\nBase"]
+
+  style A fill:#0078d4,stroke:#0078d4,color:#fff
+  style B fill:#0078d4,stroke:#005a9e,color:#fff
+  style C fill:#7fba00,stroke:#5d8a00,color:#1a1a2e
+  style D fill:#00bcf2,stroke:#0090bf,color:#1a1a2e
+  style E fill:#ffb900,stroke:#cc9400,color:#1a1a2e
+  style F fill:#f25022,stroke:#c23f1b,color:#fff
+    </pre>
   </div>
 </section>
 
@@ -391,11 +417,36 @@
 <section>
   <h2>Architecture — Business View</h2>
   <h3>Three layers. One secure pipeline.</h3>
-  <div class="arch-flow" style="font-size:0.85em; text-align:left; line-height:2.2;">
-    <span style="color:var(--tva-amber)">📄 Your Documents</span> &nbsp;→&nbsp; <span style="color:var(--tva-cyan)">🧠 AI Brain</span> &nbsp;→&nbsp; <span style="color:var(--tva-green)">👥 Your Teams</span><br>
-    &nbsp;&nbsp; NERC filings &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Azure AI &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Copilot agent<br>
-    &nbsp;&nbsp; Grid reports &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Foundry (RAG) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; in Teams / web<br>
-    &nbsp;&nbsp; NRC documents &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; via API
+  <div class="mermaid-wrap">
+    <pre class="mermaid">
+flowchart LR
+  subgraph docs ["📄 Your Documents"]
+    D1["NERC filings"]
+    D2["Grid reports"]
+    D3["NRC documents"]
+    D4["River mgmt data"]
+  end
+  subgraph brain ["🧠 AI Brain"]
+    B1["Azure AI\nFoundry (RAG)"]
+  end
+  subgraph teams ["👥 Your Teams"]
+    T1["Copilot agent\nin Teams / web"]
+    T2["via API"]
+  end
+
+  docs --> brain --> teams
+
+  style docs fill:#332800,stroke:#ffb900,color:#ffb900
+  style brain fill:#002233,stroke:#00bcf2,color:#00bcf2
+  style teams fill:#1a2e0a,stroke:#7fba00,color:#7fba00
+  style D1 fill:transparent,stroke:none,color:#ddd
+  style D2 fill:transparent,stroke:none,color:#ddd
+  style D3 fill:transparent,stroke:none,color:#ddd
+  style D4 fill:transparent,stroke:none,color:#ddd
+  style B1 fill:transparent,stroke:none,color:#ddd
+  style T1 fill:transparent,stroke:none,color:#ddd
+  style T2 fill:transparent,stroke:none,color:#ddd
+    </pre>
   </div>
   <div class="callout-green callout" style="margin-top:1em;">
     <strong>Key message:</strong> This runs inside TVA's Microsoft tenant. Your data doesn't go to a public model endpoint. It stays inside the fence.
@@ -452,20 +503,26 @@
 <!-- TECH ARCHITECTURE OVERVIEW -->
 <section>
   <h2>Architecture — Technical View</h2>
-  <div class="arch-flow" style="font-size:0.7em; text-align:left; line-height:2;">
-    User<br>
-    &nbsp;&nbsp;│<br>
-    &nbsp;&nbsp;▼<br>
-    <span style="color:var(--tva-cyan)">Copilot Studio Agent</span> &nbsp;(Entra ID SSO — user identity forwarded)<br>
-    &nbsp;&nbsp;│<br>
-    &nbsp;&nbsp;▼<br>
-    <span style="color:var(--tva-green)">Azure APIM</span> ──── JWT validation · CORS · Rate limiting<br>
-    &nbsp;&nbsp;│<br>
-    &nbsp;&nbsp;▼<br>
-    <span style="color:var(--tva-amber)">Azure Container Apps</span> &nbsp;(MCP Server — always-on, auto-scaling, HTTPS)<br>
-    &nbsp;&nbsp;│<br>
-    &nbsp;&nbsp;▼<br>
-    <span style="color:var(--tva-blue)">Azure AI Foundry</span> + TVA Knowledge Base (Azure AI Search)
+  <div class="mermaid-wrap">
+    <pre class="mermaid">
+flowchart TD
+  A["👤 User"] --> B["Copilot Studio Agent\n(Entra ID SSO)"]
+  B -->|"user identity forwarded"| C["Azure APIM"]
+  C --> C1["JWT validation"]
+  C --> C2["CORS"]
+  C --> C3["Rate limiting"]
+  C --> D["Azure Container Apps\n(MCP Server)"]
+  D -->|"always-on · auto-scaling · HTTPS"| E["Azure AI Foundry\n+ TVA Knowledge Base"]
+
+  style A fill:#0078d4,stroke:#005a9e,color:#fff
+  style B fill:#00bcf2,stroke:#0090bf,color:#1a1a2e
+  style C fill:#7fba00,stroke:#5d8a00,color:#1a1a2e
+  style C1 fill:#2d4a00,stroke:#7fba00,color:#ccc
+  style C2 fill:#2d4a00,stroke:#7fba00,color:#ccc
+  style C3 fill:#2d4a00,stroke:#7fba00,color:#ccc
+  style D fill:#ffb900,stroke:#cc9400,color:#1a1a2e
+  style E fill:#0078d4,stroke:#005a9e,color:#fff
+    </pre>
   </div>
 </section>
 
@@ -504,13 +561,24 @@
 <section>
   <h2>RAG Architecture</h2>
   <h3>How the knowledge base works</h3>
-  <div class="arch-flow" style="font-size:0.8em;">
-    📄 TVA Documents &nbsp;→&nbsp; <span style="color:var(--tva-amber)">Chunk</span>
-    &nbsp;→&nbsp; <span style="color:var(--tva-cyan)">Embed</span>
-    &nbsp;→&nbsp; <span style="color:var(--tva-blue)">Index</span>
-    &nbsp;→&nbsp; <span style="color:var(--tva-green)">Retrieve</span>
-    &nbsp;→&nbsp; <span style="color:var(--tva-amber)">Augment</span>
-    &nbsp;→&nbsp; <span style="color:var(--tva-cyan)">Generate</span>
+  <div class="mermaid-wrap">
+    <pre class="mermaid">
+flowchart LR
+  A["📄 TVA\nDocuments"] --> B["Chunk"]
+  B --> C["Embed"]
+  C --> D["Index"]
+  D --> E["Retrieve"]
+  E --> F["Augment"]
+  F --> G["Generate"]
+
+  style A fill:#333,stroke:#666,color:#fff
+  style B fill:#ffb900,stroke:#cc9400,color:#1a1a2e
+  style C fill:#00bcf2,stroke:#0090bf,color:#1a1a2e
+  style D fill:#0078d4,stroke:#005a9e,color:#fff
+  style E fill:#7fba00,stroke:#5d8a00,color:#1a1a2e
+  style F fill:#ffb900,stroke:#cc9400,color:#1a1a2e
+  style G fill:#00bcf2,stroke:#0090bf,color:#1a1a2e
+    </pre>
   </div>
   <div class="two-col" style="margin-top:1em;">
     <div>
@@ -733,10 +801,23 @@
 <section>
   <h2>OBO Token Flow</h2>
   <h3>User identity end-to-end</h3>
-  <div class="arch-flow" style="font-size:0.8em; text-align:left; line-height:2.2;">
-    User &nbsp;→&nbsp; <span style="color:var(--tva-cyan)">Copilot Studio</span> &nbsp;→&nbsp; [user token] &nbsp;→&nbsp; <span style="color:var(--tva-green)">APIM</span> &nbsp;→&nbsp; [OBO exchange] &nbsp;→&nbsp; <span style="color:var(--tva-amber)">Backend API</span><br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↑<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Token validation + user context
+  <div class="mermaid-wrap">
+    <pre class="mermaid">
+sequenceDiagram
+  participant U as 👤 User
+  participant CS as Copilot Studio
+  participant APIM as Azure APIM
+  participant BE as Backend API
+
+  U->>CS: Ask question
+  CS->>APIM: Forward request + user token
+  Note over APIM: validate-azure-ad-token<br/>JWT audience & issuer check
+  APIM->>APIM: OBO token exchange
+  APIM->>BE: Request + OBO token + user context
+  BE-->>APIM: Response
+  APIM-->>CS: Response
+  CS-->>U: Answer with citations
+    </pre>
   </div>
   <div class="two-col" style="margin-top:1em;">
     <div>
@@ -761,16 +842,28 @@
 
 <section>
   <h2>When to Use What</h2>
-  <div class="decision-tree">
-    User needs info from a document/knowledge base?<br>
-    &nbsp;&nbsp;└── <span style="color:var(--tva-green)">YES → Use Knowledge Source</span> (AI Search + Foundry)<br><br>
-    User needs to trigger an action or workflow?<br>
-    &nbsp;&nbsp;└── YES → Is the action a well-defined tool with a schema?<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── <span style="color:var(--tva-cyan)">YES → Use MCP</span> (model picks the right tool)<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── <span style="color:var(--tva-amber)">NO → Use Agent Flow / HTTP Action</span><br><br>
-    Multiple specialized agents needed?<br>
-    &nbsp;&nbsp;├── <span style="color:var(--tva-blue)">YES → Sub-agent model</span> (orchestrator + specialists)<br>
-    &nbsp;&nbsp;└── NO → Keep it in one agent with topics
+  <div class="mermaid-wrap mermaid-lg">
+    <pre class="mermaid">
+flowchart TD
+  Q1{"User needs info from\na knowledge base?"} -->|YES| A1["✅ Knowledge Source\n(AI Search + Foundry)"]
+  Q1 -->|NO| Q2{"Trigger an action\nor workflow?"}
+  Q2 -->|YES| Q3{"Well-defined tool\nwith a schema?"}
+  Q2 -->|NO| Q4{"Multiple specialized\nagents needed?"}
+  Q3 -->|YES| A2["✅ Use MCP\n(model picks the right tool)"]
+  Q3 -->|NO| A3["✅ Agent Flow / HTTP Action\n(more control)"]
+  Q4 -->|YES| A4["✅ Sub-agent model\n(orchestrator + specialists)"]
+  Q4 -->|NO| A5["✅ One agent with topics"]
+
+  style Q1 fill:#0078d4,stroke:#005a9e,color:#fff
+  style Q2 fill:#0078d4,stroke:#005a9e,color:#fff
+  style Q3 fill:#0078d4,stroke:#005a9e,color:#fff
+  style Q4 fill:#0078d4,stroke:#005a9e,color:#fff
+  style A1 fill:#7fba00,stroke:#5d8a00,color:#1a1a2e
+  style A2 fill:#00bcf2,stroke:#0090bf,color:#1a1a2e
+  style A3 fill:#ffb900,stroke:#cc9400,color:#1a1a2e
+  style A4 fill:#0078d4,stroke:#005a9e,color:#fff
+  style A5 fill:#333,stroke:#666,color:#fff
+    </pre>
   </div>
 </section>
 
@@ -793,21 +886,26 @@
 <section>
   <h2>Production Architecture</h2>
   <h3>What you deploy in Lab 3</h3>
-  <div class="arch-flow" style="font-size:0.7em; text-align:left; line-height:2.2;">
-    User<br>
-    &nbsp;&nbsp;│<br>
-    &nbsp;&nbsp;▼<br>
-    <span style="color:var(--tva-cyan)">Copilot Studio Agent</span><br>
-    &nbsp;&nbsp;│ &nbsp;(Entra ID SSO — user identity forwarded)<br>
-    &nbsp;&nbsp;▼<br>
-    <span style="color:var(--tva-green)">Azure APIM</span> ──── <code>validate-azure-ad-token</code> policy<br>
-    &nbsp;&nbsp;│ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;──── CORS policy<br>
-    &nbsp;&nbsp;│ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;──── Rate limiting<br>
-    &nbsp;&nbsp;▼<br>
-    <span style="color:var(--tva-amber)">Azure Container Apps</span> (TVA MCP Server)<br>
-    &nbsp;&nbsp;│ &nbsp;(always-on, auto-scaling, HTTPS)<br>
-    &nbsp;&nbsp;▼<br>
-    <span style="color:var(--tva-blue)">TVA Knowledge Base</span> (Azure AI Search + AI Foundry)
+  <div class="mermaid-wrap">
+    <pre class="mermaid">
+flowchart TD
+  A["👤 User"] --> B["Copilot Studio Agent"]
+  B -->|"Entra ID SSO\nuser identity forwarded"| C["Azure APIM"]
+  C --- P1["validate-azure-ad-token policy"]
+  C --- P2["CORS policy"]
+  C --- P3["Rate limiting"]
+  C --> D["Azure Container Apps\n(TVA MCP Server)"]
+  D -->|"always-on · auto-scaling · HTTPS"| E["TVA Knowledge Base\n(Azure AI Search + AI Foundry)"]
+
+  style A fill:#0078d4,stroke:#005a9e,color:#fff
+  style B fill:#00bcf2,stroke:#0090bf,color:#1a1a2e
+  style C fill:#7fba00,stroke:#5d8a00,color:#1a1a2e
+  style P1 fill:#2d4a00,stroke:#7fba00,color:#ccc
+  style P2 fill:#2d4a00,stroke:#7fba00,color:#ccc
+  style P3 fill:#2d4a00,stroke:#7fba00,color:#ccc
+  style D fill:#ffb900,stroke:#cc9400,color:#1a1a2e
+  style E fill:#0078d4,stroke:#005a9e,color:#fff
+    </pre>
   </div>
 </section>
 
@@ -959,6 +1057,35 @@ npx just workshop:ship</code></pre>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
 <script>
+  mermaid.initialize({
+    startOnLoad: false,
+    theme: 'dark',
+    themeVariables: {
+      darkMode: true,
+      background: 'transparent',
+      primaryColor: '#0078d4',
+      primaryTextColor: '#fff',
+      primaryBorderColor: '#005a9e',
+      lineColor: '#555',
+      secondaryColor: '#00bcf2',
+      tertiaryColor: '#1a1a2e',
+      fontFamily: "'Segoe UI', system-ui, sans-serif",
+      fontSize: '14px',
+      noteBkgColor: '#1a1a2e',
+      noteTextColor: '#ccc',
+      noteBorderColor: '#00bcf2',
+      actorBkg: '#0078d4',
+      actorTextColor: '#fff',
+      actorBorder: '#005a9e',
+      actorLineColor: '#555',
+      signalColor: '#ccc',
+      signalTextColor: '#ccc',
+      sequenceNumberColor: '#fff'
+    },
+    flowchart: { curve: 'basis', padding: 12 },
+    sequence: { actorMargin: 40, messageMargin: 30 }
+  });
+
   Reveal.initialize({
     hash: true,
     slideNumber: 'c/t',
@@ -970,6 +1097,8 @@ npx just workshop:ship</code></pre>
     backgroundTransition: 'fade',
     center: false,
     plugins: [RevealHighlight, RevealNotes]
+  }).then(() => {
+    mermaid.run({ querySelector: '.mermaid' });
   });
 </script>
 </body>
