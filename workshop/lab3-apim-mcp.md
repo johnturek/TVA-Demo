@@ -229,9 +229,9 @@ User → Copilot Studio → [user token] → APIM → [OBO exchange] → Backend
 <inbound>
   <base />
   <validate-azure-ad-token header-name="Authorization" failed-validation-httpcode="401" failed-validation-error-message="Unauthorized">
-    <application-ids>
+    <client-application-ids>
       <application-id>api://tva-doc-processor</application-id>
-    </application-ids>
+    </client-application-ids>
     <audiences>
       <audience>api://tva-doc-processor</audience>
     </audiences>

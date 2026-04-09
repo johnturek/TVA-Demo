@@ -9,9 +9,11 @@
     },
     "ghcr.io/devcontainers/features/node:1": {
       "version": "22"
-    }
+    },
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
   },
-  "postCreateCommand": "npm install && pip install -r boilerplate/mcp-backend/requirements.txt 2>/dev/null || true",
+  "initializeCommand": "git submodule update --init --recursive 2>/dev/null || true",
+  "postCreateCommand": "bash -c 'git submodule update --init --recursive && npm install && pip install -r boilerplate/mcp-backend/requirements.txt && pip install \"azure-ai-projects>=2.0.0\" azure-identity azure-search-documents && cp -n .env.example .env 2>/dev/null || true && echo \"✅ Workshop environment ready. Run: az login --use-device-code\"'",
   "customizations": {
     "vscode": {
       "extensions": [

@@ -28,8 +28,11 @@ The devcontainer automatically installs:
 - PowerShell 7+
 - Python 3.12
 - Node.js 22
+- Docker-in-Docker (for Lab 3)
 - All npm + pip dependencies
+- Azure AI Projects SDK v2 (`azure-ai-projects>=2.0.0`)
 - VS Code extensions (REST Client, Python, PowerShell, Azure)
+- `.env` file copied from `.env.example`
 
 You'll see the terminal when it's ready.
 

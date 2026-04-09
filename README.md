@@ -244,8 +244,8 @@ npx just workshop:start
 
 | Topic | Link |
 |-------|------|
-| Azure AI Foundry | https://learn.microsoft.com/en-us/azure/ai-foundry/ |
-| Foundry Agent Service | https://learn.microsoft.com/en-us/azure/ai-foundry/agents/overview |
+| Microsoft Foundry | https://learn.microsoft.com/en-us/azure/foundry/ |
+| Foundry Agent Service | https://learn.microsoft.com/en-us/azure/foundry/agents/overview |
 | Copilot Studio overview | https://learn.microsoft.com/en-us/microsoft-copilot-studio/ |
 | Copilot Studio + MCP | https://learn.microsoft.com/en-us/microsoft-copilot-studio/agent-extend-action-mcp |
 | Copilot Studio auth (OBO) | https://learn.microsoft.com/en-us/microsoft-copilot-studio/configuration-authentication-azure-ad |

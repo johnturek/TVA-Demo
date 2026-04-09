@@ -1,7 +1,7 @@
 # Lab 1: Microsoft Foundry Setup
 **Duration:** 90 minutes | **Session:** 1 of 3 | **Presenter:** Kevin
 
-> 📚 **Microsoft Learn:** [Microsoft Foundry documentation](https://learn.microsoft.com/en-us/azure/ai-foundry/) | [What is Microsoft Foundry?](https://learn.microsoft.com/en-us/azure/ai-foundry/what-is-ai-foundry)
+> 📚 **Microsoft Learn:** [Microsoft Foundry documentation](https://learn.microsoft.com/en-us/azure/foundry/) | [What is Microsoft Foundry?](https://learn.microsoft.com/en-us/azure/foundry/what-is-foundry)
 
 ---
 
@@ -24,7 +24,7 @@ By the end of this lab, participants will have:
 
 ## Part 1: Create Your Foundry Project (20 min)
 
-> 📚 **MS Learn:** [Quickstart — Create a Microsoft Foundry project](https://learn.microsoft.com/en-us/azure/ai-foundry/agents/quickstart?pivots=ai-foundry-portal) | [Microsoft Foundry projects overview](https://learn.microsoft.com/en-us/azure/ai-foundry/concepts/ai-foundry-hubs-projects-overview)
+> 📚 **MS Learn:** [Quickstart — Create a Microsoft Foundry project](https://learn.microsoft.com/en-us/azure/foundry/quickstarts/get-started-code) | [Microsoft Foundry projects overview](https://learn.microsoft.com/en-us/azure/foundry/how-to/create-projects)
 
 > ⚠️ **Note on naming:** Microsoft rebranded "Azure AI Foundry" to **Microsoft Foundry** in early 2026. The portal is still at **https://ai.azure.com** — click the **"New Foundry"** toggle at the top if you see the old interface. Hub-based projects are now labeled "classic" — use the new flow below. Note: "Azure AI Foundry" still appears in some SDK package names and service URLs (e.g. `azure-ai-projects`, `services.ai.azure.com`) — this is expected; the brand name changed but the underlying service identifiers haven't all been updated yet.
 
@@ -55,13 +55,13 @@ Once created, confirm you see:
 > ⚠️ **Vignette: Wrong subscription**
 > If you don't see the workshop Foundry resource, click your name (top right) → **Switch directory** → select the workshop tenant.
 >
-> 📚 [Manage access to Microsoft Foundry](https://learn.microsoft.com/en-us/azure/ai-foundry/concepts/rbac-azure-ai-foundry)
+> 📚 [Manage access to Microsoft Foundry](https://learn.microsoft.com/en-us/azure/foundry/concepts/rbac-foundry)
 
 ---
 
 ## Part 2: Upload TVA Documents (25 min)
 
-> 📚 **MS Learn:** [Add data to your project](https://learn.microsoft.com/en-us/azure/ai-foundry/how-to/data-add) | [Foundry Agent Service — File Search](https://learn.microsoft.com/en-us/azure/ai-foundry/agents/how-to/tools/file-search)
+> 📚 **MS Learn:** [Add data to your project](https://learn.microsoft.com/en-us/azure/foundry/how-to/data-add) | [Foundry Agent Service — File Search](https://learn.microsoft.com/en-us/azure/foundry/agents/how-to/tools/file-search)
 
 We'll load the following TVA-relevant documents into the agent's knowledge base:
 - TVA NERC CIP Compliance Summary (provided in `/docs` folder)
@@ -79,7 +79,7 @@ We'll load the following TVA-relevant documents into the agent's knowledge base:
 2. In the agent playground, scroll to **Knowledge** → click **+ Add**
 3. Select **Files** → upload all files from the workshop `/docs` folder
 
-> 📚 [Foundry Agent Service overview](https://learn.microsoft.com/en-us/azure/ai-foundry/agents/overview)
+> 📚 [Foundry Agent Service overview](https://learn.microsoft.com/en-us/azure/foundry/agents/overview)
 
 ### Step 2: Configure the Agent
 - **Agent name:** `TVA Document Processor`
@@ -98,7 +98,7 @@ Click **Save**.
 > ⚠️ **Vignette: File upload stuck**
 > If files are stuck at "Processing", wait 2–3 minutes — first-time vector store provisioning can be slow. Refresh the page. If still stuck, remove and re-upload the files.
 >
-> 📚 [Troubleshoot Foundry Agent file uploads](https://learn.microsoft.com/en-us/azure/ai-foundry/agents/how-to/tools/file-search)
+> 📚 [Troubleshoot Foundry Agent file uploads](https://learn.microsoft.com/en-us/azure/foundry/agents/how-to/tools/file-search)
 
 ### Step 3: Verify via Python
 
@@ -114,14 +114,14 @@ import os
 from azure.ai.projects import AIProjectClient
 from azure.identity import DefaultAzureCredential
 
-project_client = AIProjectClient(
+project = AIProjectClient(
     endpoint=os.getenv("AZURE_AI_PROJECT_ENDPOINT"),
     credential=DefaultAzureCredential()
 )
 
-# List agent versions in your project
-for agent in project_client.agents.list_versions():
-    print(f"Agent: {agent.name} | ID: {agent.id}")
+# List agents in your project
+for agent in project.agents.list():
+    print(f"Agent: {agent.name} | Version: {agent.version}")
 ```
 
 > 📚 [azure-ai-projects Python SDK](https://learn.microsoft.com/en-us/python/api/overview/azure/ai-projects-readme)
@@ -130,7 +130,7 @@ for agent in project_client.agents.list_versions():
 
 ## Part 3: Deploy gpt-4o Endpoint (15 min)
 
-> 📚 **MS Learn:** [Deploy models in Microsoft Foundry](https://learn.microsoft.com/en-us/azure/ai-foundry/concepts/deployments-overview) | [Azure OpenAI models](https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/models)
+> 📚 **MS Learn:** [Deploy models in Microsoft Foundry](https://learn.microsoft.com/en-us/azure/foundry/foundry-models/how-to/deploy-models) | [Azure OpenAI models](https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/models)
 
 ### Step 1: Navigate to Models + Endpoints
 1. Click **Models + endpoints** in left nav
@@ -158,7 +158,7 @@ FOUNDRY_AGENT_KEY=<same as AZURE_OPENAI_KEY above>
 
 ## Part 4: Test Agent Queries (30 min)
 
-> 📚 **MS Learn:** [Foundry Agent Service quickstart](https://learn.microsoft.com/en-us/azure/ai-foundry/agents/quickstart) | [Run and evaluate agents](https://learn.microsoft.com/en-us/azure/ai-foundry/agents/concepts/runs)
+> 📚 **MS Learn:** [Foundry Agent Service quickstart](https://learn.microsoft.com/en-us/azure/foundry/agents/quickstarts/prompt-agent) | [Build with agents, conversations, and responses](https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/runtime-components)
 
 ### Step 1: Test in the Playground
 1. Click **Agents** → select your `TVA Document Processor` agent
@@ -187,7 +187,7 @@ curl -X POST "$PROJECT_ENDPOINT/openai/v1/conversations" \
   -d "{\"agent_id\": \"$AGENT_ID\"}"
 ```
 
-> 📚 [Foundry Agents REST API reference](https://learn.microsoft.com/en-us/rest/api/azureaiprojects/)
+> 📚 [Foundry Agents REST API reference](https://learn.microsoft.com/en-us/rest/api/aifoundry/)
 
 ### Step 3: Python Integration Test
 
@@ -198,36 +198,37 @@ import os
 from azure.ai.projects import AIProjectClient
 from azure.identity import DefaultAzureCredential
 
-project_client = AIProjectClient(
+project = AIProjectClient(
     endpoint=os.getenv("AZURE_AI_PROJECT_ENDPOINT"),
     credential=DefaultAzureCredential()
 )
 
-agent_id = os.getenv("AZURE_AGENT_ID")
+agent_name = os.getenv("AZURE_AGENT_NAME", "TVA Document Processor")
 
 # Get an OpenAI client scoped to this project
-openai_client = project_client.inference.get_azure_openai_client()
+openai = project.get_openai_client()
 
-# Create a conversation (replaces "thread")
-conversation = openai_client.conversations.create()
-
-# Send a message and get a response (replaces create_message + create_and_process_run)
-response = openai_client.responses.create(
-    conversation=conversation.id,
-    extra_body={"agent_reference": {"id": agent_id}},
+# Generate a response using the agent (replaces thread/message/run pattern)
+response = openai.responses.create(
+    extra_body={
+        "agent_reference": {
+            "name": agent_name,
+            "type": "agent_reference",
+        }
+    },
     input="Summarize TVA's NERC CIP compliance posture and cite sources."
 )
 
-# Parse the response (replaces MessageTextContent iteration)
+# Print the response
 print(response.output_text)
 ```
 
-> 📚 [azure-ai-projects agents samples](https://learn.microsoft.com/en-us/azure/ai-foundry/agents/quickstart?pivots=programming-language-python)
+> 📚 [Build with agents, conversations, and responses](https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/runtime-components)
 
 > ⚠️ **Vignette: Responses not citing documents**
 > If the agent answers from general knowledge, verify **File Search** is enabled in the agent's Tools section. Also confirm your files finished processing (status = "completed" in the Files panel).
 >
-> 📚 [File Search tool reference](https://learn.microsoft.com/en-us/azure/ai-foundry/agents/how-to/tools/file-search)
+> 📚 [File Search tool reference](https://learn.microsoft.com/en-us/azure/foundry/agents/how-to/tools/file-search)
 
 ---
 
@@ -237,7 +238,7 @@ Before moving to lunch, verify:
 - [ ] Foundry project created and accessible
 - [ ] TVA documents uploaded and processed (status = Ready)
 - [ ] gpt-4o endpoint URI and key saved
-- [ ] `AZURE_AI_PROJECT_ENDPOINT`, `AZURE_AGENT_ID`, `FOUNDRY_AGENT_ENDPOINT`, and `FOUNDRY_AGENT_KEY` saved to your `.env`
+- [ ] `AZURE_AI_PROJECT_ENDPOINT`, `AZURE_AGENT_NAME`, `FOUNDRY_AGENT_ENDPOINT`, and `FOUNDRY_AGENT_KEY` saved to your `.env`
 - [ ] At least 2 agent queries returned document-cited answers
 - [ ] Python test script runs without errors
 
@@ -248,11 +249,12 @@ Before moving to lunch, verify:
 ## Learn More
 | Topic | Microsoft Learn Link |
 |-------|---------------------|
-| Microsoft Foundry overview | https://learn.microsoft.com/en-us/azure/ai-foundry/what-is-ai-foundry |
-| Foundry Agent Service | https://learn.microsoft.com/en-us/azure/ai-foundry/agents/overview |
-| File Search tool | https://learn.microsoft.com/en-us/azure/ai-foundry/agents/how-to/tools/file-search |
+| Microsoft Foundry overview | https://learn.microsoft.com/en-us/azure/foundry/what-is-foundry |
+| Foundry Agent Service | https://learn.microsoft.com/en-us/azure/foundry/agents/overview |
+| File Search tool | https://learn.microsoft.com/en-us/azure/foundry/agents/how-to/tools/file-search |
 | azure-ai-projects SDK | https://learn.microsoft.com/en-us/python/api/overview/azure/ai-projects-readme |
-| Foundry RBAC | https://learn.microsoft.com/en-us/azure/ai-foundry/concepts/rbac-azure-ai-foundry |
+| Foundry RBAC | https://learn.microsoft.com/en-us/azure/foundry/concepts/rbac-foundry |
+| Build with agents, conversations, responses | https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/runtime-components |
 
 ---
 
