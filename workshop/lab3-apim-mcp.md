@@ -47,7 +47,7 @@ curl http://localhost:8000/mcp
 # Expected: 401 Unauthorized (auth is enabled) or MCP response
 ```
 
-> ℹ️ The MCP server runs on **port 8000**, not 3001/3002. Use `npx just test:local` as a shortcut.
+> ℹ️ The MCP server runs on **port 8000**. Use `npx just test:local` as a shortcut.
 
 ### Step 3: Test the MCP Server
 ```bash
@@ -251,7 +251,7 @@ See `boilerplate/obo-token-flow.py` for the full Python implementation.
 
 ## Lab 3 Checkpoint ✅
 
-- [ ] Docker backend running (`curl localhost:3001/health` returns OK)
+- [ ] Docker backend running (`curl localhost:8000/health` returns OK)
 - [ ] APIM configured with your API and policy
 - [ ] Agent routes through APIM successfully
 - [ ] MCP tools discovered and enabled
@@ -287,8 +287,8 @@ This is the step that turns your workshop demo into a real production asset TVA 
 ### Step 1: Run the Provisioning Script
 ```bash
 cd ~/TVA-Demo
-chmod +x boilerplate/provision-azure.sh
-./boilerplate/provision-azure.sh [your-initials]   # e.g. ./provision-azure.sh jt
+cd boilerplate/mcp-backend
+pwsh ./deploy.ps1 -LabNum l01   # or add -Walkthrough for teaching mode
 ```
 
 This script (~15 min) automatically:
@@ -320,7 +320,7 @@ source .workshop-outputs.env
 ### Step 3: Update Copilot Studio to Point to Production
 1. Open your agent in Copilot Studio
 2. Go to **Tools** → find your MCP tool → **Edit**
-3. Update the server URL from `http://localhost:3002/mcp` → your `MCP_ENDPOINT`
+3. Update the server URL from `http://localhost:8000/mcp` → your `MCP_ENDPOINT`
 4. Update authentication to use `JWT_AUDIENCE` from script output
 
 > 📚 [Connect Copilot Studio to an MCP server](https://learn.microsoft.com/en-us/microsoft-copilot-studio/mcp-add-existing-server-to-agent)
@@ -379,10 +379,10 @@ TVA Knowledge Base (Azure AI Search + AI Foundry)
 
 ## Lab 3 Final Checkpoint ✅
 
-- [ ] Docker backend ran locally (localhost:3001 health check passed)
+- [ ] Docker backend ran locally (localhost:8000 health check passed)
 - [ ] APIM JWT policy validated tokens correctly
 - [ ] MCP tools discovered and called in Copilot Studio
-- [ ] `provision-azure.sh` ran successfully
+- [ ] `deploy.ps1` ran successfully
 - [ ] Production MCP endpoint responds to authenticated requests
 - [ ] Copilot Studio agent updated to point to production endpoint
 - [ ] End-to-end demo conversation works against live Azure backend

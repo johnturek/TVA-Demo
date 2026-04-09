@@ -22,6 +22,10 @@ You → Copilot Studio → APIM (JWT validated) → Container Apps (MCP Server) 
 
 ## Quick Start
 
+**Fastest:** Click 👉 **[Open in Codespaces](https://codespaces.new/johnturek/tva-demo?quickstart=1)** — everything is pre-configured.
+
+**Or clone locally:**
+
 ```bash
 # 1. Clone the repo (with submodules)
 git clone --recurse-submodules https://github.com/johnturek/TVA-Demo
@@ -67,25 +71,39 @@ This repo uses [`just-task`](https://github.com/microsoft/just) — Microsoft's 
 
 ---
 
-## Prerequisites
+## Workshop Environment — Choose Your Setup
 
-Install these before the workshop:
+We support **three ways** to run this workshop. Pick what works for you:
 
-| Tool | Install | Version |
-|------|---------|---------|
-| Node.js | https://nodejs.org | 18+ |
-| Python | https://python.org | **3.10+** (3.12 recommended) |
-| Docker Desktop | https://docker.com/products/docker-desktop | Latest |
-| Azure CLI | https://learn.microsoft.com/en-us/cli/azure/install-azure-cli | Latest |
-| VS Code | https://code.visualstudio.com | Latest |
-| VS Code REST Client | Extensions → `humao.rest-client` | Latest |
+| Option | Best For | What You Need | Time to Ready |
+|--------|----------|---------------|---------------|
+| **A. GitHub Codespaces** ⭐ | Everyone (recommended) | GitHub account + browser | ~2 min |
+| **B. Azure Cloud Shell** | Already in Azure Portal | Azure subscription + browser | ~5 min |
+| **C. Local Install** | Experienced devs | Node, Python, PowerShell, Azure CLI | ~15 min |
+
+### Option A: GitHub Codespaces (Recommended)
+
+👉 **[Open in Codespaces](https://codespaces.new/johnturek/tva-demo?quickstart=1)** — zero installs, full VS Code in the browser, everything pre-configured.
+
+Every free GitHub account gets 60 hours/month — more than enough for this workshop.
+
+### Option B: Azure Cloud Shell
+
+Go to **[shell.azure.com](https://shell.azure.com)**, clone the repo, and run. You're already signed in.
+
+### Option C: Local Install
+
+Node 18+, Python 3.10+, PowerShell 7+, Azure CLI. See details below.
+
+> 📖 **Full setup guide with step-by-step instructions for all three options:** [`workshop/setup-environment.md`](workshop/setup-environment.md)
+
+### Verify Your Environment (All Options)
 
 ```bash
-# Verify prereqs
+az account show --query '{name:name, user:user.name}' -o table
 node --version
 python3 --version
-docker --version
-az --version
+pwsh --version
 ```
 
 ---
@@ -110,7 +128,7 @@ AZURE_OPENAI_DEPLOYMENT=gpt-4o
 FOUNDRY_AGENT_ENDPOINT=https://tva-workshop.services.ai.azure.com/api/projects/tva-doc-processor-[yourname]
 FOUNDRY_AGENT_KEY=
 
-# Azure Identity (filled by provision-azure.sh)
+# Azure Identity (filled by deploy.ps1 / setup-entra-apps.ps1)
 AZURE_TENANT_ID=
 AZURE_CLIENT_ID=
 AZURE_CLIENT_SECRET=
@@ -160,7 +178,11 @@ TVA-Demo/
 ├── slides/                 # Reveal.js presentation slides
 │   └── index.html              # Full workshop slide deck (open in browser)
 │
+├── .devcontainer/          # GitHub Codespaces / devcontainer config
+│   └── devcontainer.json
+│
 └── workshop/               # Workshop materials
+    ├── setup-environment.md    # ⭐ Environment setup (Codespaces / Cloud Shell / Local)
     ├── agenda.md
     ├── exec-brief.md
     ├── lab1-azure-foundry.md
