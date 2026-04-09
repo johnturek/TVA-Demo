@@ -119,9 +119,16 @@ project = AIProjectClient(
     credential=DefaultAzureCredential()
 )
 
-# List agents in your project
-for agent in project.agents.list():
-    print(f"Agent: {agent.name} | Version: {agent.version}")
+# Get an OpenAI client scoped to this project
+openai = project.get_openai_client()
+
+# Quick test — chat completion
+response = openai.chat.completions.create(
+    model=os.getenv("AZURE_OPENAI_DEPLOYMENT", "gpt-4o"),
+    messages=[{"role": "user", "content": "What is Azure AI Foundry?"}],
+    max_tokens=100
+)
+print(response.choices[0].message.content)
 ```
 
 > 📚 [azure-ai-projects Python SDK](https://learn.microsoft.com/en-us/python/api/overview/azure/ai-projects-readme)
@@ -191,7 +198,7 @@ curl -X POST "$PROJECT_ENDPOINT/openai/v1/conversations" \
 
 ### Step 3: Python Integration Test
 
-> ⚠️ **New SDK pattern (v2.x):** The old `create_thread()` / `create_message()` / `create_and_process_run()` / `list_messages()` methods and `MessageTextContent` import are from the deprecated classic SDK (v1.x). Use the new Conversations/Responses pattern below.
+> ⚠️ **New SDK pattern (v2.x):** The old `create_thread()` / `create_message()` / `create_and_process_run()` / `list_messages()` methods and `MessageTextContent` import are from the deprecated classic SDK (v1.x). Use the new Responses API pattern below.
 
 ```python
 import os
@@ -203,27 +210,29 @@ project = AIProjectClient(
     credential=DefaultAzureCredential()
 )
 
-agent_name = os.getenv("AZURE_AGENT_NAME", "TVA Document Processor")
-
-# Get an OpenAI client scoped to this project
 openai = project.get_openai_client()
 
-# Generate a response using the agent (replaces thread/message/run pattern)
+# Use responses.create() with instructions — the agent pattern used in this workshop.
+# The model + instructions + tools = an "inline agent" that doesn't need to be registered.
 response = openai.responses.create(
-    extra_body={
-        "agent_reference": {
-            "name": agent_name,
-            "type": "agent_reference",
-        }
-    },
+    model=os.getenv("AZURE_OPENAI_DEPLOYMENT", "gpt-4o"),
+    instructions="""You are the TVA Document Processor assistant. You help TVA engineers
+    and compliance officers find answers in TVA regulatory documents, NERC CIP compliance
+    reports, and grid reliability data. Always cite the source document when answering.
+    If information is not in the provided documents, say so clearly.""",
     input="Summarize TVA's NERC CIP compliance posture and cite sources."
 )
 
-# Print the response
 print(response.output_text)
 ```
 
 > 📚 [Build with agents, conversations, and responses](https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/runtime-components)
+
+> 💡 **Workshop labs:** Aaron's `foundry-lab/` directory in the mcp-backend submodule contains 6 hands-on Python labs that build on this pattern — from basic completions through multi-agent architectures and RAG. Run them with:
+> ```bash
+> cd boilerplate/mcp-backend/foundry-lab
+> python labs/lab01-prompts-completions/lab01_completions.py
+> ```
 
 > ⚠️ **Vignette: Responses not citing documents**
 > If the agent answers from general knowledge, verify **File Search** is enabled in the agent's Tools section. Also confirm your files finished processing (status = "completed" in the Files panel).

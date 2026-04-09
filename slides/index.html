@@ -607,16 +607,32 @@ flowchart LR
 <section>
   <h2><span class="pill pill-green">Lab 1</span> Azure AI Foundry Setup</h2>
   <h3>90 minutes — Hands-on</h3>
-  <table>
-    <thead><tr><th>Time</th><th>Task</th></tr></thead>
-    <tbody>
-      <tr><td>0–20 min</td><td>Create Foundry project, confirm model deployments</td></tr>
-      <tr><td>20–45 min</td><td>Upload TVA documents, create vector index</td></tr>
-      <tr><td>45–75 min</td><td>Test RAG in Foundry playground</td></tr>
-      <tr><td>75–90 min</td><td>Copy endpoint URLs &amp; keys for Lab 2</td></tr>
-    </tbody>
-  </table>
-  <div class="checkpoint" style="margin-top:1em;">
+  <div class="two-col">
+    <div>
+      <table>
+        <thead><tr><th>Time</th><th>Task</th></tr></thead>
+        <tbody>
+          <tr><td>0–20 min</td><td>Create Foundry project, confirm model deployments</td></tr>
+          <tr><td>20–45 min</td><td>Upload TVA documents, create vector index</td></tr>
+          <tr><td>45–75 min</td><td>Test in playground + run Python labs</td></tr>
+          <tr><td>75–90 min</td><td>Copy endpoint URLs &amp; keys for Lab 2</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <h3>Aaron's Foundry Labs <span class="pill pill-green">Hands-on</span></h3>
+      <ul style="font-size:0.7em;">
+        <li><strong>Lab 01:</strong> Prompts &amp; Completions (TVA personas)</li>
+        <li><strong>Lab 02:</strong> Responses API (structured output, web search)</li>
+        <li><strong>Lab 03:</strong> Agents (Code Interpreter, function calling)</li>
+        <li><strong>Lab 04:</strong> Multi-Agent (sequential, parallel, critic)</li>
+        <li><strong>Lab 05:</strong> RAG with Azure AI Search</li>
+        <li><strong>Lab 06:</strong> Foundry IQ (agentic retrieval)</li>
+      </ul>
+      <p style="font-size:0.65em; color:#888;">Labs 04–06 are stretch goals / post-workshop</p>
+    </div>
+  </div>
+  <div class="checkpoint" style="margin-top:0.8em;">
     <h3>✅ Lab 1 Checkpoint</h3>
     <ul style="font-size:0.75em;">
       <li>Foundry project created &amp; accessible</li>
@@ -633,8 +649,12 @@ flowchart LR
     <div>
       <h3>⚠️ SDK Deprecation Notice</h3>
       <p style="font-size:0.8em;">The classic Agents API (v1.x — threads/messages/runs) is <span class="highlight-red">deprecated</span>.</p>
-      <p style="font-size:0.8em;">This lab uses the <span class="highlight-green">new Agents SDK (v2.x)</span> with Conversations/Responses pattern.</p>
-      <pre><code class="language-bash">pip install "azure-ai-projects>=2.0.0"</code></pre>
+      <p style="font-size:0.8em;">This workshop uses the <span class="highlight-green">Responses API</span> pattern:</p>
+      <pre><code class="language-python">openai.responses.create(
+  model="gpt-4o",
+  instructions="You are a TVA...",
+  input="Your question"
+)</code></pre>
     </div>
     <div>
       <h3>New Foundry Portal</h3>

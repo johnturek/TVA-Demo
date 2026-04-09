@@ -66,6 +66,8 @@ This repo uses [`just-task`](https://github.com/microsoft/just) — Microsoft's 
 | `npx just workshop:ship` | End-of-day: provision Azure (walkthrough) + verify production |
 | `npx just clean` | Stop containers, remove volumes |
 | `npx just slides` | Open workshop slides in browser |
+| `npx just foundry:deploy` | Deploy Foundry Lab infrastructure (AI Foundry + AI Search) |
+| `npx just foundry:lab` | Run a Foundry lab (`FOUNDRY_LAB=01` through `06`) |
 
 > **Workshop tip:** Use `npx just provision:teach` for Lab 3 — it pauses at each step with explanations so participants understand what's being deployed.
 
@@ -163,7 +165,15 @@ TVA-Demo/
 │   │   ├── add-users.ps1           # Assign users to MCP.User app role
 │   │   ├── Dockerfile
 │   │   ├── example.env
-│   │   └── requirements.txt
+│   │   ├── requirements.txt
+│   │   └── foundry-lab/            # ⭐ Aaron's 6 hands-on Foundry labs
+│   │       ├── deploy.ps1              # Bicep infra deployment
+│   │       ├── labs/lab01-prompts-completions/
+│   │       ├── labs/lab02-responses-api/
+│   │       ├── labs/lab03-agents/
+│   │       ├── labs/lab04-multi-agent/
+│   │       ├── labs/lab05-rag/
+│   │       └── labs/lab06-foundry-iq/
 │   ├── upload-docs.py          # Upload TVA docs to Azure AI Search
 │   ├── agent-template.yaml     # Copilot Studio agent definition
 │   └── test-agent.http         # REST Client test file

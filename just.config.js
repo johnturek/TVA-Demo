@@ -228,3 +228,33 @@ task('slides', () => {
   logger.info('✅ Slides opened in browser');
   logger.info('💡 Use arrow keys to navigate, F for fullscreen, S for speaker view');
 });
+
+// 18. Deploy Foundry Lab infrastructure (Aaron's 6 hands-on labs)
+task('foundry:deploy', () => {
+  logger.info('Deploying Foundry Lab infrastructure (AI Foundry Account + Project + AI Search)...');
+  logger.info('⏱  First run takes ~5 minutes for Bicep deployment.');
+  const labNum = process.env.LAB_NUM || '';
+  const walkthrough = process.env.WALKTHROUGH === 'true' ? '-Walkthrough' : '';
+  run(`pwsh -File deploy.ps1 -Prefix foundry-lab ${walkthrough}`, { cwd: 'boilerplate/mcp-backend/foundry-lab' });
+});
+
+// 19. Run a specific Foundry lab (e.g., FOUNDRY_LAB=01 npx just foundry:lab)
+task('foundry:lab', () => {
+  const labNum = process.env.FOUNDRY_LAB || '01';
+  const labMap = {
+    '01': 'lab01-prompts-completions/lab01_completions.py',
+    '02': 'lab02-responses-api/lab02_responses.py',
+    '03': 'lab03-agents/lab03_agents.py',
+    '04': 'lab04-multi-agent/lab04_multi_agent.py',
+    '05': 'lab05-rag/lab05_rag.py',
+    '06': 'lab06-foundry-iq/lab06_foundry_iq.py',
+  };
+  const labFile = labMap[labNum];
+  if (!labFile) {
+    logger.error(`Unknown lab: ${labNum}. Use 01-06.`);
+    process.exit(1);
+  }
+  logger.info(`Running Foundry Lab ${labNum}...`);
+  const python = fs.existsSync('.venv-python') ? fs.readFileSync('.venv-python', 'utf8').trim() : 'python3';
+  run(`"${python}" labs/${labFile}`, { cwd: 'boilerplate/mcp-backend/foundry-lab' });
+});

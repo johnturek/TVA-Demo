@@ -98,19 +98,24 @@
 ### 9:30 AM – 11:00 AM | Lab 1: Azure AI Foundry Setup
 **Format:** Hands-On Lab (90 min)  
 **Presenter/Facilitator:** Kevin  
-**See:** `lab1-azure-foundry.md`
+**See:** `lab1-azure-foundry.md` + `boilerplate/mcp-backend/foundry-lab/`
 
 **What participants build:**
 - Azure AI Foundry project (pre-provisioned hub, participants create project)
 - Knowledge base with 5 sample TVA regulatory documents
 - GPT-4o deployment
 - A working chat endpoint they can test via playground
+- **Hands-on Python labs** (Aaron's foundry-lab — participants run as many as time allows):
+  - Lab 01: Prompts & Completions (TVA personas, temperature, streaming)
+  - Lab 02: Responses API (structured output, web search, multi-turn)
+  - Lab 03: Agents (instructions, Code Interpreter, function calling)
+  - Lab 04–06: Available as stretch goals or post-workshop exercises
 
 **Milestones (time-boxed):**
 - 0–20 min: Create project, confirm model deployments
 - 20–45 min: Upload TVA documents, create vector index
-- 45–75 min: Test RAG in Foundry playground
-- 75–90 min: Copy endpoint URLs, API key, Agent ID, and Foundry Agent Endpoint for Lab 2
+- 45–75 min: Test in Foundry playground + run foundry-lab exercises
+- 75–90 min: Copy endpoint URLs, keys for Lab 2
 
 **Exec track during lab:**
 - Separate breakout (Kevin designates an exec host)

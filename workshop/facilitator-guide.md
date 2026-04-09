@@ -126,11 +126,13 @@ Executives and developers have different needs. Don't ignore either group.
 
 | Lab | Target | Buffer | If Behind |
 |-----|--------|--------|-----------|
-| Lab 1 | 90 min | 15 min | Skip Part 4 REST test, keep Python test |
+| Lab 1 | 90 min | 15 min | Skip Part 4 REST test; foundry-lab exercises 04–06 are stretch goals |
 | Lab 2 | 90 min | 15 min | Skip prompt-based YAML section |
-| Lab 3 | 90 min | 15 min | Skip Agent SDK section, focus on APIM + MCP |
+| Lab 3 | 90 min | 15 min | deploy.ps1 handles APIM — focus on MCP + OBO concepts |
 
 **Golden rule:** Never cut the end-to-end demo at the end of each lab. That's the "wow moment" that makes the whole lab land.
+
+**Aaron's foundry-lab exercises:** Labs 01–03 fit within Session 1 time. Labs 04 (multi-agent), 05 (RAG), and 06 (Foundry IQ) are excellent post-workshop exercises or can be used if a group finishes early. Each lab has an interactive exercise menu — participants can pick specific exercises to run.
 
 ---
 

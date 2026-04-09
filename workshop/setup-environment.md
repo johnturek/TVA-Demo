@@ -31,6 +31,7 @@ The devcontainer automatically installs:
 - Docker-in-Docker (for Lab 3)
 - All npm + pip dependencies
 - Azure AI Projects SDK v2 (`azure-ai-projects>=2.0.0`)
+- Aaron's Foundry Lab dependencies (`rich`, `azure-search-documents`, `openai`)
 - VS Code extensions (REST Client, Python, PowerShell, Azure)
 - `.env` file copied from `.env.example`
 
