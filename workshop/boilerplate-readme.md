@@ -217,7 +217,7 @@ def exchange_token_obo(user_access_token: str) -> str:
     Exchange a user's access token for a token scoped to the TVA backend API.
     Call this in your APIM policy or backend middleware.
     """
-    url = f"https://login.microsoftonline.com/{TENANT_ID}/oauth2/v2.0/token"
+    url = f"https://login.microsoftonline.us/{TENANT_ID}/oauth2/v2.0/token"
     
     data = {
         "grant_type":            "urn:ietf:params:oauth:grant-type:jwt-bearer",

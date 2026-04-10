@@ -16,14 +16,14 @@ By the end of this lab, participants will have:
 ## Prerequisites
 - Completed Lab 1 (Azure AI Foundry agent deployed and endpoint ready)
 - Your saved values: `AZURE_OPENAI_ENDPOINT`, `AZURE_OPENAI_KEY`, `FOUNDRY_AGENT_ENDPOINT`, `FOUNDRY_AGENT_KEY`
-- Access to https://copilotstudio.microsoft.com
+- Access to https://copilotstudio.microsoft.us
 
 ---
 
 ## Part 1: Create the Agent (15 min)
 
 ### Step 1: Open Copilot Studio
-1. Navigate to https://copilotstudio.microsoft.com
+1. Navigate to https://copilotstudio.microsoft.us
 2. Sign in with demo tenant credentials
 
 ### Step 2: Create Your Agent

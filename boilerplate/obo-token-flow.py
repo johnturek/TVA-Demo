@@ -17,7 +17,7 @@ def exchange_token_obo(user_access_token: str) -> str:
     Call this in your APIM inbound policy or backend middleware — NOT in
     client-side code (client secret must stay server-side).
     """
-    url = f"https://login.microsoftonline.com/{TENANT_ID}/oauth2/v2.0/token"
+    url = f"https://login.microsoftonline.us/{TENANT_ID}/oauth2/v2.0/token"
 
     data = {
         "grant_type":           "urn:ietf:params:oauth:grant-type:jwt-bearer",

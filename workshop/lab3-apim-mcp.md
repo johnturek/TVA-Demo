@@ -57,7 +57,7 @@ MCP_ENDPOINT:   https://mcp-workshop-l01-apim.azure-api.net/mcp
 PRM_METADATA:   https://mcp-workshop-l01-apim.azure-api.net/.well-known/oauth-protected-resource
 BACKEND_URL:    https://mcp-workshop-l01-mcp.agreeabledune-xxx.eastus2.azurecontainerapps.io
 JWT_AUDIENCE:   api://[your-app-id]
-JWT_ISSUER:     https://login.microsoftonline.com/[tenant-id]/v2.0
+JWT_ISSUER:     https://login.microsoftonline.us/[tenant-id]/v2.0
 =======================================================
 ```
 
