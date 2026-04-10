@@ -13,11 +13,11 @@
 | 8:00 – 8:30 | Arrival & Setup | Setup/Check-in | All | Everyone |
 | 8:30 – 9:00 | Kickoff & Overview | Presentation | Kevin | Everyone (leadership + technical) |
 | 9:00 – 9:30 | Session 1 Intro: Copilot Studio | Presentation | Aaron | Everyone |
-| 9:30 – 11:00 | Lab 1: Build the Document Processor Agent | Hands-On Lab | Aaron | Everyone |
-| 11:00 – 11:15 | Break | — | — | — |
-| 11:15 – 11:45 | Session 2 Intro: Azure AI Foundry | Presentation | Kevin | Everyone |
-| 11:45 – 1:00 | Lab 2: Azure AI Foundry Setup | Hands-On Lab | Kevin | Everyone |
-| 1:00 – 2:00 | Lunch — *Kevin leads executive working lunch* | Working Lunch | Kevin | Leadership breakout / Tech lunch |
+| 9:30 – 10:45 | Lab 1: Build the Document Processor Agent | Hands-On Lab | Aaron | Everyone |
+|  |
+| 11:00 – 11:15 | Session 2 Intro: Azure AI Foundry | Presentation | Kevin | Everyone |
+| 11:15 – 12:00 | Lab 2: Azure AI Foundry Setup | Hands-On Lab | Kevin | Everyone |
+| 12:00 – 1:00 | Lunch — *Kevin leads executive working lunch* | Working Lunch | Kevin | Leadership breakout / Tech lunch |
 | 2:00 – 2:30 | Session 3 Intro: APIM + MCP + Secure Auth | Presentation | JT | Technical team |
 | 2:30 – 4:00 | Lab 3: APIM Integration + MCP Server | Hands-On Lab | JT | Technical team |
 | 4:00 – 4:15 | Break | — | — | — |
@@ -97,7 +97,7 @@
 
 ---
 
-### 9:30 AM – 11:00 AM | Lab 1: Build the TVA Document Processor Agent
+### 9:30 AM – 10:45 AM | Lab 1: Build the TVA Document Processor Agent
 **Format:** Hands-On Lab (90 min)  
 **Presenter/Facilitator:** Aaron  
 **See:** `lab2-copilot-studio.md`
@@ -123,11 +123,11 @@
 
 ---
 
-### 11:00 AM – 11:15 AM | Break
+
 
 ---
 
-### 11:15 AM – 11:45 AM | Session 2 Intro: Azure AI Foundry
+### 11:00 AM – 11:15 AM | Session 2 Intro: Azure AI Foundry
 **Format:** Presentation  
 **Presenter:** Kevin  
 **Audience:** Everyone
@@ -147,7 +147,7 @@
 
 ---
 
-### 11:45 AM – 1:00 PM | Lab 2: Azure AI Foundry Setup
+### 11:15 AM – 12:00 PM | Lab 2: Azure AI Foundry Setup
 **Format:** Hands-On Lab (75 min)  
 **Presenter/Facilitator:** Kevin  
 **See:** `lab1-azure-foundry.md` + `boilerplate/mcp-backend/foundry-lab/`
@@ -177,7 +177,7 @@
 
 ---
 
-### 1:00 PM – 2:00 PM | Lunch
+### 12:00 PM – 1:00 PM | Lunch
 **Technical team:** Catered lunch. Presenters available for informal Q&A. Encourage participants to leave the agent running — Lab 3 builds on it.
 
 **Leadership track:** Kevin leads an executive working lunch in a separate room. Topics include:
