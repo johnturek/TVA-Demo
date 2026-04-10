@@ -8,21 +8,23 @@
 
 ## Schedule at a Glance
 
-| Time | Block | Format | Presenter |
-|------|-------|--------|-----------|
-| 8:00 – 8:30 | Arrival & Setup | Setup/Check-in | All |
-| 8:30 – 9:00 | Kickoff & Executive Framing | Presentation | JT |
-| 9:00 – 9:30 | Session 1 Intro: Azure AI Foundry | Presentation | Kevin |
-| 9:30 – 11:00 | Lab 1: Azure AI Foundry Setup | Hands-On Lab | Kevin |
-| 11:00 – 11:15 | Break | — | — |
-| 11:15 – 11:45 | Session 2 Intro: Copilot Studio | Presentation | Aaron |
-| 11:45 – 1:15 | Lab 2: Build the Document Processor Agent | Hands-On Lab | Aaron |
-| 1:15 – 2:00 | Lunch | — | — |
-| 2:00 – 2:30 | Session 3 Intro: APIM + MCP + Secure Auth | Presentation | JT |
-| 2:30 – 4:00 | Lab 3: APIM Integration + MCP Server | Hands-On Lab | JT |
-| 4:00 – 4:15 | Break | — | — |
-| 4:15 – 4:45 | Demo Showcase & What You Built | Demo/Discussion | All |
-| 4:45 – 5:00 | Closing: Next Steps & TVA Roadmap | Presentation | JT |
+| Time | Block | Format | Presenter | Audience |
+|------|-------|--------|-----------|----------|
+| 8:00 – 8:30 | Arrival & Setup | Setup/Check-in | All | Everyone |
+| 8:30 – 9:00 | Kickoff & Overview | Presentation | Kevin | Everyone (leadership + technical) |
+| 9:00 – 9:30 | Session 1 Intro: Copilot Studio | Presentation | Aaron | Everyone |
+| 9:30 – 11:00 | Lab 1: Build the Document Processor Agent | Hands-On Lab | Aaron | Everyone |
+| 11:00 – 11:15 | Break | — | — | — |
+| 11:15 – 11:45 | Session 2 Intro: Azure AI Foundry | Presentation | Kevin | Everyone |
+| 11:45 – 1:00 | Lab 2: Azure AI Foundry Setup | Hands-On Lab | Kevin | Everyone |
+| 1:00 – 2:00 | Lunch — *Kevin leads executive working lunch* | Working Lunch | Kevin | Leadership breakout / Tech lunch |
+| 2:00 – 2:30 | Session 3 Intro: APIM + MCP + Secure Auth | Presentation | JT | Technical team |
+| 2:30 – 4:00 | Lab 3: APIM Integration + MCP Server | Hands-On Lab | JT | Technical team |
+| 4:00 – 4:15 | Break | — | — | — |
+| 4:15 – 4:45 | Demo Showcase & What You Built | Demo/Discussion | All | Technical team |
+| 4:45 – 5:00 | Closing: Next Steps & TVA Roadmap | Presentation | JT | Everyone |
+
+> **Session order:** Least → most technical. Leadership is present through lunch. Kevin leads a separate executive working lunch to discuss strategy, roadmap, and next steps while the technical team continues into the afternoon deep-dive.
 
 ---
 
@@ -47,10 +49,10 @@
 
 ---
 
-### 8:30 AM – 9:00 AM | Kickoff & Executive Framing
+### 8:30 AM – 9:00 AM | Kickoff & Overview
 **Format:** Presentation  
-**Presenter:** JT  
-**Audience:** Everyone (exec + dev)
+**Presenter:** Kevin  
+**Audience:** Everyone (leadership + technical)
 
 **Objectives:**
 - Set the vision: what AI-assisted document processing means for TVA's mission
@@ -176,16 +178,22 @@
 
 ---
 
-### 1:15 PM – 2:00 PM | Lunch
-Catered lunch. Presenters available for informal Q&A.  
-Encourage participants to leave the agent running — Lab 3 builds on it.
+### 1:00 PM – 2:00 PM | Lunch
+**Technical team:** Catered lunch. Presenters available for informal Q&A. Encourage participants to leave the agent running — Lab 3 builds on it.
+
+**Leadership track:** Kevin leads an executive working lunch in a separate room. Topics include:
+- Strategic discussion: AI adoption roadmap for TVA
+- What was demonstrated in the morning — business implications
+- Deployment path from today's demo to GCC production
+- Identifying pilot use cases and executive champions
+- Budget, licensing, and timeline considerations
 
 ---
 
 ### 2:00 PM – 2:30 PM | Session 3 Intro: APIM + MCP + Secure Auth
 **Format:** Presentation  
 **Presenter:** JT  
-**Audience:** Everyone
+**Audience:** Technical team (leadership departs after working lunch)
 
 **Objectives:**
 - Understand why APIM is the right gateway layer for enterprise AI integrations
@@ -267,9 +275,9 @@ Encourage participants to leave the agent running — Lab 3 builds on it.
 
 | Presenter | Session | Lab | Other |
 |-----------|---------|-----|-------|
-| JT | Kickoff, Session 3 Intro, Closing | Lab 3 facilitator | Exec engagement throughout |
-| Kevin | Session 1 Intro | Lab 1 facilitator | Exec track during Lab 1 |
-| Aaron | Session 2 Intro | Lab 2 facilitator | GCC guidance throughout |
+| Kevin | Kickoff & Overview, Session 2 Intro (Foundry) | Lab 2 facilitator | **Executive working lunch host** |
+| Aaron | Session 1 Intro (Copilot Studio) | Lab 1 facilitator | GCC guidance throughout |
+| JT | Session 3 Intro, Closing | Lab 3 facilitator | Exec engagement AM, afternoon technical lead |
 
 ---
 
