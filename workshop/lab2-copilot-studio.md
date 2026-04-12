@@ -1,5 +1,5 @@
 # Lab 2: Build the TVA Document Processor in Copilot Studio
-**Duration:** 90 minutes | **Session:** 2 of 3 | **Presenter:** Aaron
+**Duration:** 90 minutes | **Session:** 1 of 3 | **Presenter:** John
 
 ---
 
@@ -85,9 +85,9 @@ Click **Create**.
 
 2. Configure:
    - **Method:** POST
-   - **URL:** `https://YOUR_FOUNDRY_AGENT_ENDPOINT/threads/{threadId}/messages?api-version=2024-10-21`
+   - **URL:** `https://YOUR_FOUNDRY_AGENT_ENDPOINT/invoke?api-version=2024-10-21`
    
-   > Use the **Foundry Agent Service** conversation endpoint from Lab 1, not the raw OpenAI completions endpoint.
+   > Your facilitator has pre-configured a single-turn wrapper endpoint that accepts a user message and returns the agent's reply in one call. This is simpler than the multi-step conversation API.
    
    - **Headers:**
      - `Content-Type`: `application/json`
@@ -98,31 +98,9 @@ Use this JSON template in the body field. This calls the Foundry Agent Service d
 
 ```json
 {
-  "role": "user",
-  "content": "{System.LastMessage.Text}"
-}
-```
-
-After posting the message, add a second HTTP Request node to run the thread and poll for the response:
-
-```json
-{
-  "assistant_id": "YOUR_ASSISTANT_ID"
-}
-```
-
-> **Workshop shortcut:** For the demo flow, your facilitator has pre-configured a single-turn wrapper endpoint at `YOUR_FOUNDRY_AGENT_ENDPOINT/invoke` that accepts a user message and returns the agent's reply in one call. Use that for simplicity:
-
-```json
-{
   "message": "{System.LastMessage.Text}",
   "assistant_id": "YOUR_ASSISTANT_ID"
 }
-```
-
-**Wrapper endpoint URL:**
-```
-https://YOUR_FOUNDRY_AGENT_ENDPOINT/invoke?api-version=2024-10-21
 ```
 
 ### Step 4: Parse and Display the Response
@@ -265,7 +243,7 @@ Before break, verify:
 
 **Test your agent:** In the Test panel (right side), try:
 1. "What are the NERC CIP-007 requirements for patch management?"
-2. Upload `tva-sample-compliance.pdf` and ask "What are the key findings?"
+2. Upload `nerc-cip-007.txt` (from the `/docs` folder) and ask "What are the patch management requirements?"
 3. "Who do I contact for a regulatory variance?"
 
 ---

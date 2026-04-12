@@ -135,7 +135,7 @@ Executives and developers have different needs. Don't ignore either group.
 
 **Golden rule:** Never cut the end-to-end demo at the end of each lab. That's the "wow moment" that makes the whole lab land.
 
-**Aaron's foundry-lab exercises:** Labs 01–03 fit within Session 1 time. Labs 04 (multi-agent), 05 (RAG), and 06 (Foundry IQ) are excellent post-workshop exercises or can be used if a group finishes early. Each lab has an interactive exercise menu — participants can pick specific exercises to run.
+**Aaron's foundry-lab exercises:** Labs 01–03 fit within Session 2 time. Labs 04 (multi-agent), 05 (RAG), and 06 (Foundry IQ) are excellent post-workshop exercises or can be used if a group finishes early. Each lab has an interactive exercise menu — participants can pick specific exercises to run.
 
 ---
 
