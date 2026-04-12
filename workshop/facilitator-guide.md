@@ -52,6 +52,29 @@
 - [ ] Confirm APIM instance `tva-workshop-apim` is provisioned
 - [ ] Test one full run-through of all 3 labs end-to-end
 
+### GitHub Codespaces Secrets (Required for Turnkey Classroom Setup)
+Participants launch a Codespace and get a fully configured environment — no manual credential setup needed. The repo owner must pre-load shared workshop credentials as Codespace secrets **before** the workshop.
+
+1. Go to repo **Settings → Secrets and variables → Codespaces**
+2. Add the following secrets (values come from your provisioned Azure resources):
+
+| Secret Name | Where to Get It |
+|-------------|----------------|
+| `AZURE_AI_PROJECT_ENDPOINT` | Foundry portal → project → Overview |
+| `AZURE_OPENAI_ENDPOINT` | Foundry portal → Models + endpoints → gpt-4o |
+| `AZURE_OPENAI_KEY` | Same as above → Key |
+| `AZURE_OPENAI_DEPLOYMENT` | Usually `gpt-4o` |
+| `FOUNDRY_AGENT_ENDPOINT` | Same as `AZURE_AI_PROJECT_ENDPOINT` |
+| `FOUNDRY_AGENT_KEY` | Same as `AZURE_OPENAI_KEY` |
+
+> **Optional secrets** (for Lab 3 / advanced labs): `OAUTH_CLIENT_ID`, `OAUTH_CLIENT_SECRET`, `OBO_CLIENT_ID`, `OBO_CLIENT_SECRET`, `OBO_TENANT_ID`, `AZURE_SEARCH_ENDPOINT`, `AZURE_SEARCH_ADMIN_KEY`
+
+3. Test it: open a fresh Codespace and verify `.env` is auto-populated (look for "Auto-populated N values from Codespace secrets" in terminal output)
+
+- [ ] Codespace secrets added to repo settings
+- [ ] Verified Codespace launches with credentials pre-loaded
+- [ ] Codespace link tested: `https://codespaces.new/johnturek/tva-demo?quickstart=1`
+
 ### App Registrations
 - [ ] Create the `tva-doc-processor` app registration (run `setup-app-registration.ps1`)
 - [ ] Verify app registration has correct API permissions: `openid`, `profile`, `User.Read`
