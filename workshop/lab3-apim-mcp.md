@@ -219,7 +219,7 @@ Run this conversation to show the full stack working:
 1. **User:** "What are TVA's patch management requirements under NERC CIP-007?"
    - *Should: call MCP `analyze_policy`, return structured answer*
 
-2. **User:** *(uploads `tva-compliance-report-q1.pdf`)* "Review this for compliance gaps"
+2. **User:** *(uploads `nerc-cip-010.txt` from the `/docs` folder)* "Review this for compliance gaps"
    - *Should: process file, call Azure AI Foundry, return gap analysis*
 
 3. **User:** "Search for any documents about Browns Ferry nuclear plant procedures"
