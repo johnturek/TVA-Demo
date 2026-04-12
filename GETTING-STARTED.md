@@ -45,7 +45,7 @@ code .env
 | **Lab 2** — Copilot Studio | Open `workshop/lab2-copilot-studio.md` | Build a Copilot Studio agent |
 | **Lab 3** — APIM + MCP | Open `workshop/lab3-apim-mcp.md` | Deploy to Azure, connect MCP |
 
-### Aaron's Hands-On Python Labs (Session 1)
+### Aaron's Hands-On Python Labs (Session 2)
 
 Run interactive Python exercises during Lab 1:
 
