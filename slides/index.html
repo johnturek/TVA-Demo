@@ -484,12 +484,12 @@ flowchart LR
   <p class="presenter">Presenter: JT</p>
 </section>
 
-<!-- EXEC: THE MOMENT -->
+<!-- EXEC: AI TODAY -->
 <section>
-  <h2>The Moment We're In</h2>
+  <h2>AI Today — Why It Matters for TVA</h2>
   <div class="two-col">
     <div>
-      <p>TVA's scale demands AI:</p>
+      <p>TVA's scale <span class="highlight">demands</span> AI:</p>
       <ul>
         <li><span class="highlight">49 dams</span></li>
         <li><span class="highlight">3 nuclear plants</span></li>
@@ -500,123 +500,11 @@ flowchart LR
       </ul>
     </div>
     <div>
-      <div class="callout">
-        Organizations that operationalize AI in the next 18 months will have a structural advantage in reliability, compliance speed, and workforce efficiency.
+      <div class="callout" style="margin-bottom:1em;">
+        <strong>The problem:</strong> Compliance analysts spend <span class="highlight-amber">30–40%</span> of their time locating documents. Audit prep takes <span class="highlight-amber">weeks</span> — most of it is retrieval.
       </div>
-    </div>
-  </div>
-</section>
-
-<!-- EXEC: THE PROBLEM -->
-<section>
-  <h2>The Problem</h2>
-  <h3 style="color:var(--tva-amber);">"Your experts are answering the same question 40 times a week"</h3>
-  <ul>
-    <li>Compliance analysts spend <span class="highlight-amber">30–40%</span> of their time locating and cross-referencing documents</li>
-    <li>New engineers can't find answers buried in 10-year-old PDF filings</li>
-    <li>Audit prep cycles take <span class="highlight-amber">weeks</span> — most of that is document retrieval</li>
-    <li>River management decisions require synthesizing data from multiple siloed systems</li>
-  </ul>
-  <div class="callout" style="margin-top:1em;">
-    A top-quartile utility reduced compliance document review time by <span class="highlight-green">60%</span> using AI-assisted search. TVA's document corpus is larger — the upside is proportional.
-  </div>
-</section>
-
-<!-- EXEC: ROI -->
-<section>
-  <h2>Business Case &amp; ROI</h2>
-  <h3 style="color:var(--tva-green);">"This pays for itself before end of Q3"</h3>
-  <table>
-    <thead>
-      <tr><th>Metric</th><th>Current</th><th>With AI Agent</th><th>Delta</th></tr>
-    </thead>
-    <tbody>
-      <tr><td>Compliance doc review (hrs/analyst/wk)</td><td>12–15 hrs</td><td>4–5 hrs</td><td class="highlight-green">~65% ↓</td></tr>
-      <tr><td>Audit prep cycle (NERC CIP)</td><td>3–4 weeks</td><td>5–7 days</td><td class="highlight-green">~75% ↓</td></tr>
-      <tr><td>New hire time-to-productivity</td><td>6–9 months</td><td>3–4 months</td><td class="highlight-green">~50% faster</td></tr>
-      <tr><td>Regulatory question SLA</td><td>2–3 days</td><td>Same day</td><td class="highlight-green">~85% faster</td></tr>
-    </tbody>
-  </table>
-  <div class="stat-grid" style="margin-top:0.8em;">
-    <div class="stat-card">
-      <span class="number">$300K</span>
-      <span class="label">Recovered capacity / year<br>(10 analysts × 8 hrs/wk × $75/hr)</span>
-    </div>
-    <div class="stat-card">
-      <span class="number">12,500</span>
-      <span class="label">Hours reclaimed / year<br>(30 min/doc × 500 docs × 50 engineers)</span>
-    </div>
-  </div>
-</section>
-
-<!-- EXEC: ARCHITECTURE (BUSINESS VIEW) -->
-<section>
-  <h2>Architecture — Business View</h2>
-  <h3>Three layers. One secure pipeline.</h3>
-  <div class="mermaid-wrap">
-    <pre class="mermaid">
-flowchart LR
-  subgraph docs ["📄 Your Documents"]
-    D1["NERC filings"]
-    D2["Grid reports"]
-    D3["NRC documents"]
-    D4["River mgmt data"]
-  end
-  subgraph brain ["🧠 AI Brain"]
-    B1["Azure AI&lt;br/&gt;Foundry (RAG)"]
-  end
-  subgraph teams ["👥 Your Teams"]
-    T1["Copilot agent&lt;br/&gt;in Teams / web"]
-    T2["via API"]
-  end
-
-  docs --> brain --> teams
-
-  style docs fill:#332800,stroke:#ffb900,color:#ffb900
-  style brain fill:#002233,stroke:#00bcf2,color:#00bcf2
-  style teams fill:#1a2e0a,stroke:#7fba00,color:#7fba00
-  style D1 fill:transparent,stroke:none,color:#ddd
-  style D2 fill:transparent,stroke:none,color:#ddd
-  style D3 fill:transparent,stroke:none,color:#ddd
-  style D4 fill:transparent,stroke:none,color:#ddd
-  style B1 fill:transparent,stroke:none,color:#ddd
-  style T1 fill:transparent,stroke:none,color:#ddd
-  style T2 fill:transparent,stroke:none,color:#ddd
-    </pre>
-  </div>
-  <div class="callout-green callout" style="margin-top:1em;">
-    <strong>Key message:</strong> This runs inside TVA's Microsoft tenant. Your data doesn't go to a public model endpoint. It stays inside the fence.
-  </div>
-</section>
-
-<!-- EXEC: SUCCESS PATH -->
-<section>
-  <h2>Pilot → Production in 90 Days</h2>
-  <div class="two-col">
-    <div>
-      <h3>Phase 1 — Foundation <span class="pill pill-green">Days 1–30</span></h3>
-      <ul style="font-size:0.8em;">
-        <li>Azure AI Foundry project stood up</li>
-        <li>TVA document corpus indexed</li>
-        <li>Working agent in Copilot Studio</li>
-      </ul>
-      <h3>Phase 2 — Pilot <span class="pill pill-amber">Days 31–60</span></h3>
-      <ul style="font-size:0.8em;">
-        <li>10–15 power users testing</li>
-        <li>Feedback loop on answer quality</li>
-        <li>Expand document corpus</li>
-      </ul>
-    </div>
-    <div>
-      <h3>Phase 3 — Production <span class="pill pill-blue">Days 61–90</span></h3>
-      <ul style="font-size:0.8em;">
-        <li>Teams integration deployed</li>
-        <li>API connected to existing TVA systems</li>
-        <li>SLA and monitoring in place</li>
-      </ul>
-      <div class="callout" style="margin-top:1.5em;">
-        <strong>Success metrics:</strong><br>
-        Time-to-answer · Analyst satisfaction · Retrieval accuracy · Audit prep duration
+      <div class="callout-green callout">
+        <strong>The opportunity:</strong> AI-assisted document search cuts review time by <span class="highlight-green">60%+</span>. TVA's corpus is large — the upside is proportional.
       </div>
     </div>
   </div>
@@ -624,41 +512,43 @@ flowchart LR
 
 <!-- EXEC: THE ASK -->
 <section>
-  <h2>The Ask</h2>
+  <h2>What We're Asking</h2>
   <h3 style="color:var(--tva-amber);">Three things. That's all.</h3>
   <ol style="font-size:0.95em; line-height:2;">
     <li><strong>Stay engaged today</strong> — your presence signals this matters</li>
     <li><strong>Identify 2 pilot champions</strong> — one from compliance, one from grid ops</li>
-    <li><strong>Decision in 30 days</strong> — greenlight the 90-day pilot</li>
+    <li><strong>Decision in 30 days</strong> — greenlight a 90-day pilot</li>
   </ol>
   <div class="callout-green callout" style="margin-top:1.5em; text-align:center; font-size:0.95em;">
-    <em>"TVA's mission is power — literally. This is how we make sure the people doing that work spend their time on the hard problems, not hunting through PDFs."</em>
+    <em>"TVA's mission is power — literally. This is how we make sure people spend their time on hard problems, not hunting through PDFs."</em>
   </div>
 </section>
 
-<!-- TECH ARCHITECTURE OVERVIEW -->
+<!-- HOW TO PARTICIPATE -->
 <section>
-  <h2>Architecture — Technical View</h2>
-  <div class="mermaid-wrap">
-    <pre class="mermaid">
-flowchart TD
-  A["👤 User"] --> B["Copilot Studio Agent&lt;br/&gt;(Entra ID SSO)"]
-  B -->|"user identity forwarded"| C["Azure APIM"]
-  C --> C1["JWT validation"]
-  C --> C2["CORS"]
-  C --> C3["Rate limiting"]
-  C --> D["Azure Container Apps&lt;br/&gt;(MCP Server)"]
-  D -->|"always-on · auto-scaling · HTTPS"| E["Azure AI Foundry&lt;br/&gt;+ TVA Knowledge Base"]
-
-  style A fill:#0078d4,stroke:#005a9e,color:#fff
-  style B fill:#00bcf2,stroke:#0090bf,color:#1a1a2e
-  style C fill:#7fba00,stroke:#5d8a00,color:#1a1a2e
-  style C1 fill:#2d4a00,stroke:#7fba00,color:#ccc
-  style C2 fill:#2d4a00,stroke:#7fba00,color:#ccc
-  style C3 fill:#2d4a00,stroke:#7fba00,color:#ccc
-  style D fill:#ffb900,stroke:#cc9400,color:#1a1a2e
-  style E fill:#0078d4,stroke:#005a9e,color:#fff
-    </pre>
+  <h2>How to Participate Today</h2>
+  <div class="two-col">
+    <div>
+      <h3>🎯 What You'll Get</h3>
+      <ul>
+        <li>A <span class="highlight">working AI agent</span> built live in your hands</li>
+        <li>Hands-on experience with <strong>Copilot Studio</strong> and <strong>Azure AI Foundry</strong></li>
+        <li>A production-ready architecture you can take back to your team</li>
+        <li>Q&amp;A time with Microsoft engineers after each session</li>
+      </ul>
+    </div>
+    <div>
+      <h3>✅ Ground Rules</h3>
+      <ul>
+        <li><strong>Bring your laptop</strong> — every lab is hands-on</li>
+        <li>Ask questions anytime — no dumb questions here</li>
+        <li>If you get stuck, raise your hand — we have coaches</li>
+        <li>Breaks are on the agenda — we'll keep pace</li>
+      </ul>
+      <div class="callout" style="margin-top:1em; font-size:0.8em;">
+        📋 <strong>Lab guide:</strong> All steps are in the workshop docs — follow along or go at your own pace.
+      </div>
+    </div>
   </div>
 </section>
 
