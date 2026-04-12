@@ -1,6 +1,6 @@
 # TVA Workshop — Microsoft Copilot Studio + Azure AI
 
-> **8-hour hands-on workshop** | April 15, 2026 | TVA HQ, Knoxville TN
+> **6-hour workshop** | April 15, 2026 | TVA HQ, Knoxville TN
 >
 > Build a production-ready, Entra ID–secured AI agent connected to TVA's knowledge base — live in Azure by end of day.
 
@@ -219,13 +219,13 @@ git add boilerplate/mcp-backend && git commit -m "chore: sync mcp-backend"
 
 | Time | Session | Presenter |
 |------|---------|-----------|
-| 8:30 AM | Kickoff + Executive Briefing | JT |
-| 9:00 AM | Session 1: Azure AI Foundry + Lab | Kevin |
-| 11:45 AM | Session 2: Copilot Studio + Lab | Aaron |
-| 1:45 PM | Session 2 continued | Aaron |
-| 2:45 PM | Session 3: APIM + MCP + Lab | JT |
-| 4:45 PM | **Production Deploy** (`npx just workshop:ship`) | All |
-| 5:15 PM | Q&A + Next Steps | All |
+| 9:00–9:15 AM | Session 0: Welcome & Intro | Kevin / Wesley / TVA Leader |
+| 9:15–11:30 AM | Session 1: Copilot Studio | John |
+| 11:30–12:30 PM | Lunch (Frontier AI Discussion) | Kevin + TVA Leadership |
+| 12:30–2:30 PM | Session 2: AI Foundry | Aaron / JT |
+| 2:30–4:00 PM | Session 3: Use Case Development | All |
+
+> **Total:** 5h content + 1h lunch = 6h (9:00 AM–4:00 PM)
 
 Full agenda: [`workshop/agenda.md`](workshop/agenda.md)
 

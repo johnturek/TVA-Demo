@@ -1,40 +1,43 @@
 # Facilitator Guide — TVA Workshop
-**Date:** April 15, 2026 | **Location:** TVA HQ, Knoxville TN | **Duration:** 8 hours
+**Date:** April 15, 2026 | **Location:** TVA HQ, Knoxville TN | **Duration:** 6 hours (9:00 AM–4:00 PM)
 
 ---
 
-## Session Ownership (Suggested)
+## Session Ownership
 
 | Session | Owner | Content |
 |---------|-------|---------|
-| Kickoff + Exec Brief | JT | Business case, agenda, demo overview |
-| Session 1 — Azure AI Foundry | Kevin | Foundry setup, vector index, RAG |
-| Session 2 — Copilot Studio | Aaron | Agent build, auth, file upload |
-| Lunch | — | — |
-| Session 3 — APIM + MCP | JT | Integration, secure auth, MCP |
-| Wrap-up + Q&A | All three | Recap, next steps, exec close |
+| Session 0 — Welcome & Intro | Kevin / Wesley / TVA Leader | Welcome, agenda overview |
+| Session 1 — Copilot Studio | John | What Is Copilot Studio, Build Your First Agent, Knowledge/Tools/Agents, Connecting to Foundry |
+| Lunch | Kevin + TVA Leadership | Frontier AI Discussion |
+| Session 2 — AI Foundry | Aaron / JT | Foundry Overview, Labs 01–04 |
+| Session 3 — Use Case Development | All | Brainstorm, team breakout, readout |
 
 ---
 
 ## Full Day Schedule
 
-| Time | Duration | Segment | Format |
-|------|----------|---------|--------|
-| 8:30 AM | 30 min | Arrival, setup, coffee | Informal |
-| 9:00 AM | 30 min | Kickoff + Executive Briefing | Presentation (JT) |
-| 9:30 AM | 30 min | Session 1 Intro — Azure AI Foundry | Presentation (Kevin) |
-| 10:00 AM | 90 min | Lab 1 — Hands-on Foundry Setup | Lab |
-| 11:30 AM | 15 min | Break | — |
-| 11:45 AM | 30 min | Session 2 Intro — Copilot Studio | Presentation (Aaron) |
-| 12:15 PM | 45 min | Lab 2 Part A — Build the Agent | Lab |
-| 1:00 PM | 45 min | Lunch | — |
-| 1:45 PM | 45 min | Lab 2 Part B — Auth + File Upload | Lab |
-| 2:30 PM | 15 min | Break | — |
-| 2:45 PM | 30 min | Session 3 Intro — APIM + MCP | Presentation (JT) |
-| 3:15 PM | 90 min | Lab 3 — Integration + Secure Auth | Lab |
-| 4:45 PM | 30 min | End-to-End Demo + Wrap-up | All |
-| 5:15 PM | 30 min | Q&A + Next Steps | Open |
-| 5:45 PM | — | End | — |
+| Time | Duration | Segment | Lead |
+|------|----------|---------|------|
+| 9:00–9:15 AM | 15 min | Session 0: Welcome & Intro | Kevin / Wesley / TVA Leader |
+| 9:15–9:30 AM | 15 min | What Is Copilot Studio (slides) | John |
+| 9:30–9:55 AM | 25 min | Build Your First Agent (lab) | John |
+| 9:55–10:05 AM | 10 min | BREAK | — |
+| 10:05–10:30 AM | 25 min | Knowledge, Tools & Agents (slides + lab) | John |
+| 10:30–10:50 AM | 20 min | Connecting to Foundry (slides + demo) | John |
+| 10:50–11:00 AM | 10 min | Session 1 Wrap‑Up + Q&A | John |
+| 11:00–11:30 AM | 30 min | (buffer / overflow) | — |
+| 11:30 AM–12:30 PM | 60 min | Lunch — Frontier AI Discussion | Kevin + TVA Leadership |
+| 12:30–12:45 PM | 15 min | Foundry Overview & Architecture | Aaron / JT |
+| 12:45–1:05 PM | 20 min | Lab 01: Prompts & Completions | Aaron / JT |
+| 1:05–1:25 PM | 20 min | Lab 02: Responses API | Aaron / JT |
+| 1:25–1:35 PM | 10 min | BREAK | — |
+| 1:35–1:55 PM | 20 min | Lab 03: Agents | Aaron / JT |
+| 1:55–2:15 PM | 20 min | Lab 04: Multi‑Agent | Aaron / JT |
+| 2:15–2:30 PM | 15 min | Session 2 Wrap‑Up | Aaron / JT |
+| 2:30–3:00 PM | 30 min | TVA Use Case Brainstorm | All |
+| 3:00–3:40 PM | 40 min | Team Breakout: Design an Agent | All |
+| 3:40–4:00 PM | 20 min | Readout + Next Steps | All |
 
 ---
 
