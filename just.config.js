@@ -221,10 +221,19 @@ task('slides', () => {
     logger.error('slides/index.html not found');
     process.exit(1);
   }
-  const opener = process.platform === 'darwin' ? 'open'
-    : process.platform === 'win32' ? 'start'
-    : 'xdg-open';
-  run(`${opener} "${slidesPath}"`);
+  if (process.platform === 'darwin') {
+    run(`open "${slidesPath}"`);
+  } else if (process.platform === 'win32') {
+    run(`start "" "${slidesPath}"`);
+  } else {
+    const slidesUrl = `file://${slidesPath}`;
+    // In dev containers, xdg-open may not exist; prefer VS Code-provided browser command.
+    if (process.env.BROWSER) {
+      run(`${process.env.BROWSER} "${slidesUrl}"`);
+    } else {
+      run(`xdg-open "${slidesPath}"`);
+    }
+  }
   logger.info('✅ Slides opened in browser');
   logger.info('💡 Use arrow keys to navigate, F for fullscreen, S for speaker view');
 });
