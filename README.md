@@ -32,8 +32,8 @@ You → Copilot Studio → APIM (JWT validated) → Container Apps (MCP Server) 
 # 1. Authenticate with GitHub CLI
 gh auth login
 
-# 2. Clone the repo (with submodules)
-git clone --recurse-submodules https://github.com/johnturek/TVA-Demo
+# 2. Clone the repo
+git clone https://github.com/johnturek/TVA-Demo
 cd TVA-Demo
 
 # 3. Install dependencies + upload docs

@@ -31,10 +31,14 @@ function loadEnv(file = '.workshop-outputs.env') {
 
 // 1. Install all dependencies (Python MCP server + local Node tools)
 task('install', () => {
-  // Ensure git submodule (mcp-backend) is initialized
-  logger.info('Initializing git submodules...');
-  run('git submodule update --init --recursive');
-  logger.info('✅ Submodules ready');
+  // Attempt git submodule init (no-op if no submodules are configured)
+  try {
+    logger.info('Checking git submodules...');
+    run('git submodule update --init --recursive');
+    logger.info('✅ Submodules ready');
+  } catch (_) {
+    logger.info('ℹ️  No submodules to initialize (mcp-backend is bundled inline)');
+  }
 
   // Detect python3 vs python and enforce 3.10+
   const python = (() => {
@@ -183,12 +187,10 @@ task('test:local', () => {
   logger.info('\u2705 MCP server reachable at http://localhost:8000/mcp');
 });
 
-// 11. Sync Aaron's mcp-backend submodule to latest
+// 11. (No-op) mcp-backend is now bundled inline — no submodule to sync
 task('sync', () => {
-  logger.info('Syncing mcp-backend submodule to latest...');
-  run('git submodule update --remote boilerplate/mcp-backend');
-  logger.info('✅ mcp-backend updated to latest commit from Aaron\'s repo');
-  logger.info('Run `git add boilerplate/mcp-backend && git commit -m "chore: sync mcp-backend"` to save the update');
+  logger.info('ℹ️  mcp-backend is now bundled directly in this repo (no submodule).');
+  logger.info('   To update the MCP server code, edit boilerplate/mcp-backend/ directly.');
 });
 
 // 12. Add a user to the MCP.User app role

@@ -8,10 +8,10 @@ echo "║          TVA Workshop — Environment Setup                ║"
 echo "╚══════════════════════════════════════════════════════════╝"
 echo ""
 
-# 1. Submodules
-echo "⏳ Initializing submodules..."
-git submodule update --init --recursive
-echo "   ✅ Submodules ready"
+# 1. Submodules (best-effort — mcp-backend is now inline, no submodules required)
+echo "⏳ Checking submodules..."
+git submodule update --init --recursive 2>/dev/null || true
+echo "   ✅ Submodules checked"
 
 # 2. Node dependencies
 echo "⏳ Installing Node.js dependencies..."
@@ -23,7 +23,7 @@ echo "⏳ Installing Python dependencies..."
 pip install --quiet \
   -r boilerplate/mcp-backend/requirements.txt \
   -r boilerplate/mcp-backend/foundry-lab/requirements.txt \
-  2>&1 | tail -1
+  2>&1 | tail -1 || true
 echo "   ✅ Python ready"
 
 # 4. Copy .env template and auto-populate from Codespace secrets
