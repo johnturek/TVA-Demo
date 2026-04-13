@@ -4,7 +4,17 @@
 
 ---
 
-## Step 1: Sign into Azure (required)
+## Step 1: Sign into GitHub and Azure (required)
+
+### GitHub CLI (for cloning and repo operations)
+
+```bash
+gh auth login
+```
+
+Follow the prompts to authenticate with your GitHub account.
+
+### Azure CLI (for resource deployment)
 
 ```bash
 az login --use-device-code
@@ -75,12 +85,20 @@ FOUNDRY_LAB=06 npx just foundry:lab
 
 ## Step 4: Deploy to Azure (Lab 3)
 
-When you're ready for production deployment:
+When you're ready for production deployment, run the following commands from the repo root.  
+Replace `tvad01` with your unique `LAB_NUM` (each student needs a unique value for per-student resources).
 
 ```bash
-cd boilerplate/mcp-backend
-pwsh ./deploy.ps1 -LabNum l01 -Walkthrough
+# Provision Azure resources (Entra ID → Container Registry → Container App → APIM)
+LAB_NUM=tvad01 npx just provision
+
+# Deploy Foundry Lab infrastructure (AI Foundry Account + AI Search)
+LAB_NUM=tvad01 WALKTHROUGH=true SEARCH_LOCATION=westus npx just foundry:deploy
 ```
+
+> 💡 **`LAB_NUM`** must be unique per student when using per-student resources (e.g. `tvad01`, `tvad02`). It can be the same value for all students if they share resources — e.g., use `tva01` during the live TVA workshop.
+>
+> 💡 **`WALKTHROUGH=true`** pauses at each deployment step with explanations — recommended for teaching mode.
 
 This deploys: Entra ID app → Container Registry → Container App → APIM (takes ~15 min).
 
@@ -94,7 +112,7 @@ This deploys: Entra ID app → Container Registry → Container App → APIM (ta
 | `npx just slides` | Open the presentation slides |
 | `npx just dev` | Start MCP server locally |
 | `npx just test:local` | Health-check local server |
-| `npx just foundry:deploy` | Deploy Foundry Lab infrastructure |
+| `LAB_NUM=tvad01 WALKTHROUGH=true SEARCH_LOCATION=westus npx just foundry:deploy` | Deploy Foundry Lab infrastructure |
 | `npx just workshop:ship` | Full production deploy |
 | `npx just clean` | Stop & clean Docker containers |
 
@@ -104,6 +122,7 @@ This deploys: Entra ID app → Container Registry → Container App → APIM (ta
 
 | Problem | Fix |
 |---------|-----|
+| `gh auth login` fails | Ensure GitHub CLI is installed: `gh --version`. Retry and follow the browser prompt. |
 | `az login` fails | Use `--use-device-code`. Check you're using demo tenant credentials. |
 | Python import errors | Run `pip install -r boilerplate/mcp-backend/foundry-lab/requirements.txt` |
 | `.env` is empty | Run `cp .env.example .env` and fill in values from check-in card |
