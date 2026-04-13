@@ -1,5 +1,5 @@
 # Facilitator Guide — TVA Workshop
-**Date:** April 15, 2026 | **Location:** TVA HQ, Knoxville TN | **Duration:** 6 hours (9:00 AM–4:00 PM)
+**Date:** April 15, 2026 | **Location:** TVA HQ, Knoxville TN | **Duration:** 7 hours onsite (9:00 AM–4:00 PM) | 6 hours content + 1 hour lunch
 
 ---
 
@@ -46,11 +46,17 @@
 ### Tenant & Access
 - [ ] Confirm all participant emails — send demo tenant invites
 - [ ] Verify Azure portal access for each account
-- [ ] Confirm AI Foundry hub is provisioned in the demo tenant
+- [ ] Confirm Foundry resource is provisioned in the demo tenant (use the **New Foundry** experience, not classic hubs)
 - [ ] Confirm gpt-4o quota is sufficient (recommend 50K TPM minimum for group)
 - [ ] Confirm Azure AI Search instance is ready with `tva-knowledge-base` index pre-built
 - [ ] Confirm APIM instance `tva-workshop-apim` is provisioned
 - [ ] Test one full run-through of all 3 labs end-to-end
+
+### Copilot Studio Access (Session 1)
+- [ ] Confirm Copilot Studio licenses assigned for all participant accounts
+- [ ] Verify all participants can access https://copilotstudio.microsoft.us (GCC portal)
+- [ ] Confirm target Power Platform environment is provisioned for attendee accounts
+- [ ] Test creating an agent from a participant account — not just facilitator accounts
 
 ### GitHub Codespaces Secrets (Required for Turnkey Classroom Setup)
 Participants launch a Codespace and get a fully configured environment — no manual credential setup needed. The repo owner must pre-load shared workshop credentials as Codespace secrets **before** the workshop.
@@ -64,6 +70,7 @@ Participants launch a Codespace and get a fully configured environment — no ma
 | `AZURE_OPENAI_ENDPOINT` | Foundry portal → Models + endpoints → gpt-4o |
 | `AZURE_OPENAI_KEY` | Same as above → Key |
 | `AZURE_OPENAI_DEPLOYMENT` | Usually `gpt-4o` |
+| `AZURE_OPENAI_DEPLOYMENT_NAME` | Same as above — used by foundry-lab exercises |
 | `FOUNDRY_AGENT_ENDPOINT` | Same as `AZURE_AI_PROJECT_ENDPOINT` |
 | `FOUNDRY_AGENT_KEY` | Same as `AZURE_OPENAI_KEY` |
 
@@ -75,16 +82,26 @@ Participants launch a Codespace and get a fully configured environment — no ma
 - [ ] Verified Codespace launches with credentials pre-loaded
 - [ ] Codespace link tested: `https://codespaces.new/johnturek/tva-demo?quickstart=1`
 
+### GitHub Access (Required for Codespaces)
+- [ ] Confirm all participants have a GitHub account (free tier is fine)
+- [ ] Verify repo is public or participants have been granted access
+- [ ] Test Codespace launch from a non-facilitator GitHub account
+- [ ] Consider pre-building a Codespace to reduce first-launch wait times
+
 ### App Registrations
 - [ ] Create the `tva-doc-processor` app registration (run `setup-app-registration.ps1`)
 - [ ] Verify app registration has correct API permissions: `openid`, `profile`, `User.Read`
+- [ ] Grant admin consent for the app registration in Azure portal
+- [ ] Add Copilot Studio redirect URL via `add-reply-url.ps1`
+- [ ] Assign `MCP.User` app role to all participant accounts via `add-users.ps1`
 - [ ] Test OBO flow with a test account
 
 ### Materials
-- [ ] Print lab guides (1 per participant)
+- [ ] Prepare printed check-in cards with: Codespace link (QR code), demo tenant credentials, WiFi info
+- [ ] Print lab guides (1 per participant) — backup for screen-only workers
 - [ ] Print exec brief outline (for exec attendees)
-- [ ] Prepare USB drives or SharePoint folder with boilerplate code
-- [ ] Send pre-read email to participants with prereqs (Docker, Python, VS Code)
+- [ ] Print exec observation sheets (see "Handling the Mixed Audience" section)
+- [ ] Send pre-read email to participants with: GitHub account requirement, Codespace link, agenda overview
 
 ### Docker
 - [ ] Pull workshop Docker images on your demo machine
@@ -97,8 +114,9 @@ Participants launch a Codespace and get a fully configured environment — no ma
 
 ### Final Technical Checks
 - [ ] Log into all 3 facilitator accounts — confirm no MFA surprises
-- [ ] Confirm TVA WiFi/network allows Azure portal access (no proxy blocking)
+- [ ] Confirm TVA WiFi/network allows Azure portal, Copilot Studio, GitHub, and AI Foundry access (no proxy blocking)
 - [ ] Test Azure portal, Copilot Studio, and AI Foundry from TVA network specifically
+- [ ] Launch a fresh Codespace from TVA network — verify it builds and credentials load
 - [ ] Verify Docker Desktop works on facilitator laptops on TVA network
 - [ ] Run `docker compose up` one more time — confirm clean start
 - [ ] Test APIM endpoint from TVA network
@@ -115,6 +133,12 @@ Participants launch a Codespace and get a fully configured environment — no ma
 - [ ] Slack/Teams channel open with all facilitators for real-time coordination
 - [ ] JT's fallback demo tenant credentials accessible offline (in case portal is slow)
 - [ ] Have `private.turek.in` portal open as last-resort demo fallback
+
+### Morning Check-In Prep
+- [ ] Check-in cards printed (one per participant): Codespace QR code, demo tenant login, WiFi password
+- [ ] Assign exec/dev pairing plan — who shadows whom during labs
+- [ ] Facilitator run-of-show reviewed: who presents what, who handles roaming support
+- [ ] All facilitator laptops have fallback URLs bookmarked and local clone ready
 
 ---
 
@@ -150,19 +174,23 @@ Executives and developers have different needs. Don't ignore either group.
 
 ## Timing Guidance
 
-| Lab | Target | Buffer | If Behind |
-|-----|--------|--------|-----------|
-| Lab 1 | 90 min | 15 min | Skip Part 4 REST test; foundry-lab exercises 04–06 are stretch goals |
-| Lab 2 | 90 min | 15 min | Skip prompt-based YAML section |
-| Lab 3 | 90 min | 15 min | deploy.ps1 handles APIM — focus on MCP + OBO concepts |
+> **Note:** The 3 labs (Lab 1–3 in the `workshop/` folder) do not map 1:1 to the 3 sessions. Session 1 uses Lab 2 content (Copilot Studio). Session 2 uses Lab 1 content (Foundry) plus Aaron's foundry-lab exercises. Lab 3 (APIM+MCP) is covered as a demo/walkthrough during "Connecting to Foundry" and as a post-workshop self-guided exercise.
+
+| Session | Scheduled Time | Content Time | Buffer | If Behind |
+|---------|---------------|-------------|--------|-----------|
+| Session 1: Copilot Studio | 9:15–11:30 AM | 95 min + 10 min break | 30 min overflow | Skip Lab 2 Part 5 (prompt-based YAML) |
+| Session 2: AI Foundry | 12:30–2:30 PM | 110 min + 10 min break | None — stay on schedule | foundry-lab exercises 04–06 are stretch goals |
+| Session 3: Use Cases | 2:30–4:00 PM | 90 min | Built-in — readout can flex | Shorten brainstorm to 20 min if behind |
 
 **Golden rule:** Never cut the end-to-end demo at the end of each lab. That's the "wow moment" that makes the whole lab land.
 
 **Aaron's foundry-lab exercises:** Labs 01–03 fit within Session 2 time. Labs 04 (multi-agent), 05 (RAG), and 06 (Foundry IQ) are excellent post-workshop exercises or can be used if a group finishes early. Each lab has an interactive exercise menu — participants can pick specific exercises to run.
 
+**Lab 3 (APIM+MCP):** This lab is not a standalone scheduled session. JT demos the deploy/MCP flow during Session 1's "Connecting to Foundry" segment (10:30–10:50 AM). Participants can self-guide through the full Lab 3 post-workshop using the lab guide.
+
 ---
 
-## Top 10 Troubleshooting Scenarios
+## Top 14 Troubleshooting Scenarios
 
 ### 1. Participant can't log into Azure portal
 **Fix:** Check they're using the demo tenant account (not their personal/work account). URL: `https://portal.azure.com` → click avatar → Switch directory → select workshop tenant.
@@ -186,13 +214,25 @@ Executives and developers have different needs. Don't ignore either group.
 **Fix:** Corporate proxy may block Docker Hub pulls. Have pre-pulled images on USB drives as backup. Run: `docker load < tva-workshop-images.tar`
 
 ### 8. APIM returns 401 on every request
-**Fix:** Check the `X-Api-Key` header value matches exactly: `workshop-demo-key-2026`. APIM header check is case-sensitive by default unless `ignore-case="true"` is set in policy.
+**Fix:** If using the OAuth/OBO flow (Lab 3), verify the JWT audience matches `api://[your-app-id]` and the user has the `MCP.User` app role assigned. If using the API key fallback for quick demos, check the `X-Api-Key` header value matches exactly: `workshop-demo-key-2026` (case-sensitive).
 
 ### 9. MCP tools not discovered in Copilot Studio
-**Fix:** Copilot Studio requires MCP server to be publicly accessible (not localhost). Use ngrok to expose local port: `ngrok http 8000` → use the ngrok URL in Copilot Studio MCP config.
+**Fix:** Copilot Studio requires MCP server to be publicly accessible (not localhost). Use ngrok to expose local port: `ngrok http 8000` → use the ngrok URL in Copilot Studio MCP config. In the production flow, use the APIM endpoint URL from `deploy.ps1` output.
 
 ### 10. Participant's agent gives wrong answers / ignores documents
 **Fix:** Generative answers may be defaulting to general knowledge. In the agent **Overview** page, confirm the knowledge source is connected AND select **"Only use selected knowledge sources"** in the knowledge settings. Note: this setting is on the Overview page, not Settings → Generative AI.
+
+### 11. Codespace won't start or takes too long
+**Fix:** Verify participant is signed into the correct GitHub account (not a work SSO account that blocks Codespaces). Check they haven't exceeded the free tier (60 hrs/month). If Codespace creation is slow, the devcontainer may be building from scratch — consider pre-building a Codespace image. Fallback: use Azure Cloud Shell (Option B in `setup-environment.md`).
+
+### 12. `az login` succeeds but wrong tenant/subscription
+**Fix:** After login, run `az account show` to verify the tenant name. If wrong, run `az login --tenant <workshop-tenant-id> --use-device-code`. In Codespaces, participants may default to their personal subscription. Have the workshop tenant ID printed on the check-in card.
+
+### 13. `.env` not populated / wrong deployment name
+**Fix:** If Codespace secrets weren't configured, participants must manually fill in `.env`. Run `cp .env.example .env` if the file is missing. The most common mistake is wrong model deployment name — verify `AZURE_OPENAI_DEPLOYMENT=gpt-4o` matches the actual deployment name in the Foundry portal.
+
+### 14. Copilot Studio license or environment missing
+**Fix:** Participant needs a Copilot Studio license assigned in the admin center. If they can access the portal but can't create agents, check they're in the correct Power Platform environment. Have a facilitator create the agent and share it as a fallback.
 
 ---
 
