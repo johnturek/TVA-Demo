@@ -228,7 +228,7 @@ print(response.output_text)
 
 > 📚 [Build with agents, conversations, and responses](https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/runtime-components)
 
-> 💡 **Workshop labs:** Aaron's `foundry-lab/` directory in the mcp-backend submodule contains 6 hands-on Python labs that build on this pattern — from basic completions through multi-agent architectures and RAG. Run them with:
+> 💡 **Workshop labs:** Aaron's `foundry-lab/` directory in the mcp-backend submodule contains **7** hands-on Python labs that build on this pattern — from basic completions through multi-agent architectures, RAG, and the AI Foundry Agent API. Run them with:
 > ```bash
 > cd boilerplate/mcp-backend/foundry-lab
 > python labs/lab01-prompts-completions/lab01_completions.py

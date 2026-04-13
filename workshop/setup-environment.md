@@ -185,3 +185,5 @@ Fill in the values distributed at workshop check-in. See the main [README](../RE
 | Python packages missing | Run `pip install -r boilerplate/mcp-backend/requirements.txt` manually. |
 | PowerShell not found | Install: https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell |
 | Submodule empty | Run `git submodule update --init --recursive` |
+| Lab 03 Exercise 2 fails (Code Interpreter) | Set `DISABLE_CODE_INTERPRETER_LAB=true` in `.env` — your region may not support container-based Code Interpreter. |
+| Foundry-lab uses wrong model name | Aaron's labs default to `gpt-4.1`. Set `AZURE_OPENAI_DEPLOYMENT_NAME` in `.env` to match your actual Foundry deployment (may be `gpt-4o`). |

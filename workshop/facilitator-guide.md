@@ -70,11 +70,13 @@ Participants launch a Codespace and get a fully configured environment — no ma
 | `AZURE_OPENAI_ENDPOINT` | Foundry portal → Models + endpoints → gpt-4o |
 | `AZURE_OPENAI_KEY` | Same as above → Key |
 | `AZURE_OPENAI_DEPLOYMENT` | Usually `gpt-4o` |
-| `AZURE_OPENAI_DEPLOYMENT_NAME` | Same as above — used by foundry-lab exercises |
+| `AZURE_OPENAI_DEPLOYMENT_NAME` | Same deployment name — used by foundry-lab exercises (Aaron's labs default to `gpt-4.1`; set to match your actual deployment) |
 | `FOUNDRY_AGENT_ENDPOINT` | Same as `AZURE_AI_PROJECT_ENDPOINT` |
 | `FOUNDRY_AGENT_KEY` | Same as `AZURE_OPENAI_KEY` |
 
 > **Optional secrets** (for Lab 3 / advanced labs): `OAUTH_CLIENT_ID`, `OAUTH_CLIENT_SECRET`, `OBO_CLIENT_ID`, `OBO_CLIENT_SECRET`, `OBO_TENANT_ID`, `AZURE_SEARCH_ENDPOINT`, `AZURE_SEARCH_ADMIN_KEY`
+>
+> **Foundry-lab specific:** Set `DISABLE_CODE_INTERPRETER_LAB=true` if your region does not support container-based Code Interpreter — this skips Lab 03 Exercise 2 instead of failing with a provisioning error.
 
 3. Test it: open a fresh Codespace and verify `.env` is auto-populated (look for "Auto-populated N values from Codespace secrets" in terminal output)
 
@@ -179,14 +181,18 @@ Executives and developers have different needs. Don't ignore either group.
 | Session | Scheduled Time | Content Time | Buffer | If Behind |
 |---------|---------------|-------------|--------|-----------|
 | Session 1: Copilot Studio | 9:15–11:30 AM | 95 min + 10 min break | 30 min overflow | Skip Lab 2 Part 5 (prompt-based YAML) |
-| Session 2: AI Foundry | 12:30–2:30 PM | 110 min + 10 min break | None — stay on schedule | foundry-lab exercises 04–06 are stretch goals |
+| Session 2: AI Foundry | 12:30–2:30 PM | 110 min + 10 min break | None — stay on schedule | foundry-lab exercises 04–07 are stretch goals |
 | Session 3: Use Cases | 2:30–4:00 PM | 90 min | Built-in — readout can flex | Shorten brainstorm to 20 min if behind |
 
 **Golden rule:** Never cut the end-to-end demo at the end of each lab. That's the "wow moment" that makes the whole lab land.
 
-**Aaron's foundry-lab exercises:** Labs 01–03 fit within Session 2 time. Labs 04 (multi-agent), 05 (RAG), and 06 (Foundry IQ) are excellent post-workshop exercises or can be used if a group finishes early. Each lab has an interactive exercise menu — participants can pick specific exercises to run.
+**Aaron's foundry-lab exercises:** Labs 01–03 fit within Session 2 time. Labs 04 (multi-agent), 05 (RAG), 06 (Foundry IQ), and 07 (AI Foundry Agent API with OBO auth) are excellent post-workshop exercises or can be used if a group finishes early. Each lab has an interactive exercise menu — participants can pick specific exercises to run.
 
 **Lab 3 (APIM+MCP):** This lab is not a standalone scheduled session. JT demos the deploy/MCP flow during Session 1's "Connecting to Foundry" segment (10:30–10:50 AM). Participants can self-guide through the full Lab 3 post-workshop using the lab guide.
+
+**Aaron's Copilot Studio content:** The submodule also contains a `copilot-studio-lab/` directory with slides, instructor guide, and GCC-specific scripts for Copilot Studio. This content complements Session 1 — facilitators can reference it for additional GCC setup steps or as a standalone self-guided Copilot Studio lab.
+
+**Deploy script tips:** Aaron's `deploy.ps1` supports `-ResourceGroupOverride <name>` to target a pre-existing resource group (useful for locked-down workshop tenants), and foundry-lab's `deploy.ps1` supports `-ExplainOnly` to show what each step does without executing — good for teaching mode.
 
 ---
 
@@ -229,7 +235,7 @@ Executives and developers have different needs. Don't ignore either group.
 **Fix:** After login, run `az account show` to verify the tenant name. If wrong, run `az login --tenant <workshop-tenant-id> --use-device-code`. In Codespaces, participants may default to their personal subscription. Have the workshop tenant ID printed on the check-in card.
 
 ### 13. `.env` not populated / wrong deployment name
-**Fix:** If Codespace secrets weren't configured, participants must manually fill in `.env`. Run `cp .env.example .env` if the file is missing. The most common mistake is wrong model deployment name — verify `AZURE_OPENAI_DEPLOYMENT=gpt-4o` matches the actual deployment name in the Foundry portal.
+**Fix:** If Codespace secrets weren't configured, participants must manually fill in `.env`. Run `cp .env.example .env` if the file is missing. The most common mistake is wrong model deployment name — verify `AZURE_OPENAI_DEPLOYMENT` matches the actual deployment name in the Foundry portal. Note: the main workshop labs use `gpt-4o`, but Aaron's foundry-lab exercises default to `gpt-4.1` (see `foundry-lab/example.env`). Make sure `AZURE_OPENAI_DEPLOYMENT_NAME` matches whichever model is deployed in your Foundry resource.
 
 ### 14. Copilot Studio license or environment missing
 **Fix:** Participant needs a Copilot Studio license assigned in the admin center. If they can access the portal but can't create agents, check they're in the correct Power Platform environment. Have a facilitator create the agent and share it as a fallback.
