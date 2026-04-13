@@ -149,8 +149,10 @@ task('upload-docs', () => {
 
 // 7. Provision full Azure stack — uses Aaron's deploy.ps1 with -Walkthrough for workshop
 //    Requires PowerShell 7+ (pwsh). Pass LAB_NUM env var to set participant suffix.
+//    LAB_NUM must be unique per student for per-student resources (e.g. tvad01, tvad02).
+//    For a shared environment, all students can use the same value (e.g. tva01).
 task('provision', () => {
-  const labNum = process.env.LAB_NUM || 'l01';
+  const labNum = process.env.LAB_NUM || 'tvad01';
   const walkthrough = process.env.WALKTHROUGH === 'true' ? '-Walkthrough' : '';
   logger.info(`Provisioning Azure resources for lab: ${labNum}`);
   logger.info('⏱  APIM takes ~15 minutes. Grab coffee.');
@@ -162,7 +164,7 @@ task('provision', () => {
 // 8. Provision with walkthrough mode (teaching mode — pauses at each step)
 task('provision:teach', () => {
   process.env.WALKTHROUGH = 'true';
-  const labNum = process.env.LAB_NUM || 'l01';
+  const labNum = process.env.LAB_NUM || 'tvad01';
   logger.info(`Provisioning in WALKTHROUGH mode for lab: ${labNum}`);
   run(`pwsh -File deploy.ps1 -LabNum ${labNum} -Walkthrough`, { cwd: 'boilerplate/mcp-backend' });
 });

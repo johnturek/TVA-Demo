@@ -29,19 +29,26 @@ You → Copilot Studio → APIM (JWT validated) → Container Apps (MCP Server) 
 **Or clone locally:**
 
 ```bash
-# 1. Clone the repo (with submodules)
+# 1. Authenticate with GitHub CLI
+gh auth login
+
+# 2. Clone the repo (with submodules)
 git clone --recurse-submodules https://github.com/johnturek/TVA-Demo
 cd TVA-Demo
 
-# 2. Install dependencies (auto-inits submodules if you forgot --recurse-submodules)
-npm install
-
-# 3. See all available tasks
-npx just --list
-
-# 4. Start the local workshop stack
+# 3. Install dependencies + upload docs
 npx just setup
+
+# 4. Provision Azure resources (LAB_NUM must be unique per student, e.g. tvad01)
+LAB_NUM=tvad01 npx just provision
+
+# 5. Deploy Foundry Lab infrastructure
+LAB_NUM=tvad01 WALKTHROUGH=true SEARCH_LOCATION=westus npx just foundry:deploy
 ```
+
+> 💡 **`LAB_NUM`** must be unique per student when using per-student resources (e.g. `tvad01`, `tvad02`). If all students share resources, a single value like `tva01` is fine for the live workshop.
+
+> 💡 **`SEARCH_LOCATION`** — use `westus` unless your facilitator specifies a different region.
 
 ---
 
@@ -59,8 +66,8 @@ This repo uses [`just-task`](https://github.com/microsoft/just) — Microsoft's 
 | `npx just upload-docs` | Upload TVA docs to Azure AI Search index |
 | `npx just test:local` | Health check local MCP server |
 | `npx just test:prod` | Full endpoint test suite (device-code auth + 8 tests) |
-| `npx just provision` | Deploy full Azure stack (silent mode) |
-| `npx just provision:teach` | Deploy full Azure stack **(walkthrough mode — use in workshop)** |
+| `LAB_NUM=tvad01 npx just provision` | Deploy full Azure stack (silent mode) |
+| `LAB_NUM=tvad01 npx just provision:teach` | Deploy full Azure stack **(walkthrough mode — use in workshop)** |
 | `npx just add-user` | Add a user to the MCP.User app role (`USER_EMAIL=...`) |
 | `npx just sync` | Pull latest updates from Aaron's mcp-backend submodule |
 | `npx just setup` | Install deps + upload docs |
@@ -68,10 +75,12 @@ This repo uses [`just-task`](https://github.com/microsoft/just) — Microsoft's 
 | `npx just workshop:ship` | End-of-day: provision Azure (walkthrough) + verify production |
 | `npx just clean` | Stop containers, remove volumes |
 | `npx just slides` | Open workshop slides in browser |
-| `npx just foundry:deploy` | Deploy Foundry Lab infrastructure (AI Foundry + AI Search) |
+| `LAB_NUM=tvad01 WALKTHROUGH=true SEARCH_LOCATION=westus npx just foundry:deploy` | Deploy Foundry Lab infrastructure (AI Foundry + AI Search) |
 | `npx just foundry:lab` | Run a Foundry lab (`FOUNDRY_LAB=01` through `06`) |
 
-> **Workshop tip:** Use `npx just provision:teach` for Lab 3 — it pauses at each step with explanations so participants understand what's being deployed.
+> **Workshop tip:** Use `LAB_NUM=tvad01 npx just provision:teach` for Lab 3 — it pauses at each step with explanations so participants understand what's being deployed.
+>
+> **`LAB_NUM`** must be unique per student for per-student resources (e.g. `tvad01`, `tvad02`). During the live TVA workshop, use `tva01` (or any shared prefix if all participants share resources).
 
 ---
 
