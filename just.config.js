@@ -249,7 +249,9 @@ task('foundry:deploy', () => {
   const searchLocation = process.env.SEARCH_LOCATION || '';
   const searchLocationFlag = searchLocation ? `-SearchLocation ${searchLocation}` : '';
   const walkthrough = process.env.WALKTHROUGH === 'true' ? '-Walkthrough' : '';
-  run(`pwsh -File deploy.ps1 -Prefix foundry-lab ${labNumFlag} ${searchLocationFlag} ${walkthrough}`, { cwd: 'boilerplate/mcp-backend/foundry-lab' });
+  const resourceGroupOverride = process.env.RESOURCE_GROUP_OVERRIDE || '';
+  const resourceGroupOverrideFlag = resourceGroupOverride ? `-ResourceGroupOverride ${resourceGroupOverride}` : '';
+  run(`pwsh -File deploy.ps1 -Prefix foundry-lab ${labNumFlag} ${searchLocationFlag} ${walkthrough} ${resourceGroupOverrideFlag}`, { cwd: 'boilerplate/mcp-backend/foundry-lab' });
 });
 
 // 19. Run a specific Foundry lab (e.g., FOUNDRY_LAB=01 npx just foundry:lab)

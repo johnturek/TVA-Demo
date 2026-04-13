@@ -94,6 +94,9 @@ LAB_NUM=tvad01 npx just provision
 
 # Deploy Foundry Lab infrastructure (AI Foundry Account + AI Search)
 LAB_NUM=tvad01 WALKTHROUGH=true SEARCH_LOCATION=westus npx just foundry:deploy
+
+# (Optional) Deploy into a specific pre-existing resource group
+LAB_NUM=tvad01 WALKTHROUGH=true SEARCH_LOCATION=westus RESOURCE_GROUP_OVERRIDE=mcp-workshop-rg npx just foundry:deploy
 ```
 
 > 💡 **`LAB_NUM`** must be unique per student when using per-student resources (e.g. `tvad01`, `tvad02`). It can be the same value for all students if they share resources — e.g., use `tva01` during the live TVA workshop.
@@ -113,6 +116,7 @@ This deploys: Entra ID app → Container Registry → Container App → APIM (ta
 | `npx just dev` | Start MCP server locally |
 | `npx just test:local` | Health-check local server |
 | `LAB_NUM=tvad01 WALKTHROUGH=true SEARCH_LOCATION=westus npx just foundry:deploy` | Deploy Foundry Lab infrastructure |
+| `LAB_NUM=tvad01 WALKTHROUGH=true SEARCH_LOCATION=westus RESOURCE_GROUP_OVERRIDE=mcp-workshop-rg npx just foundry:deploy` | Deploy Foundry Lab into a specific pre-existing resource group |
 | `npx just workshop:ship` | Full production deploy |
 | `npx just clean` | Stop & clean Docker containers |
 
