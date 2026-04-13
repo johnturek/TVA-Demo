@@ -44,11 +44,16 @@ LAB_NUM=tvad01 npx just provision
 
 # 5. Deploy Foundry Lab infrastructure
 LAB_NUM=tvad01 WALKTHROUGH=true SEARCH_LOCATION=westus npx just foundry:deploy
+
+# 5a. (Optional) Deploy into a specific pre-existing resource group
+LAB_NUM=tvad01 WALKTHROUGH=true SEARCH_LOCATION=westus RESOURCE_GROUP_OVERRIDE=mcp-workshop-rg npx just foundry:deploy
 ```
 
 > 💡 **`LAB_NUM`** must be unique per student when using per-student resources (e.g. `tvad01`, `tvad02`). If all students share resources, a single value like `tva01` is fine for the live workshop.
 
 > 💡 **`SEARCH_LOCATION`** — use `westus` unless your facilitator specifies a different region.
+
+> 💡 **`RESOURCE_GROUP_OVERRIDE`** — set this to an existing resource group name (e.g. `mcp-workshop-rg`) to deploy the Foundry Lab into that group instead of creating a new one. Useful when all participants share a single resource group.
 
 ---
 
@@ -76,6 +81,7 @@ This repo uses [`just-task`](https://github.com/microsoft/just) — Microsoft's 
 | `npx just clean` | Stop containers, remove volumes |
 | `npx just slides` | Open workshop slides in browser |
 | `LAB_NUM=tvad01 WALKTHROUGH=true SEARCH_LOCATION=westus npx just foundry:deploy` | Deploy Foundry Lab infrastructure (AI Foundry + AI Search) |
+| `LAB_NUM=tvad01 WALKTHROUGH=true SEARCH_LOCATION=westus RESOURCE_GROUP_OVERRIDE=mcp-workshop-rg npx just foundry:deploy` | Deploy Foundry Lab into a specific pre-existing resource group |
 | `npx just foundry:lab` | Run a Foundry lab (`FOUNDRY_LAB=01` through `06`) |
 
 > **Workshop tip:** Use `LAB_NUM=tvad01 npx just provision:teach` for Lab 3 — it pauses at each step with explanations so participants understand what's being deployed.
