@@ -443,6 +443,7 @@ AZURE_SEARCH_ENDPOINT=$($outputs.searchEndpoint.value)
 AZURE_SEARCH_ADMIN_KEY=$searchAdminKey
 AZURE_OPENAI_DEPLOYMENT_NAME=gpt-4.1
 DISABLE_CODE_INTERPRETER_LAB=$(if ($SkipCodeInterpreterLab) { "true" } else { "" })
+MCP_WORKSHOP_LABNUM=$LabNum
 "@ | Set-Content -Path $envFile -Encoding utf8
 Write-Ok ".env file written."
 
