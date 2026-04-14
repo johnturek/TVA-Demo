@@ -1,0 +1,32 @@
+[
+  {
+    "id": "doc-001",
+    "title": "Transformer Architecture",
+    "content": "The Transformer architecture, introduced in 'Attention Is All You Need' (2017), replaced recurrent layers with self-attention mechanisms. Key innovations include multi-head attention, positional encoding, and layer normalization. Transformers enable parallelized training and have become the foundation for GPT, BERT, and modern large language models.",
+    "category": "architecture"
+  },
+  {
+    "id": "doc-002",
+    "title": "Retrieval-Augmented Generation",
+    "content": "RAG combines a retrieval system with a generative model. At inference time, relevant documents are retrieved from an index and injected into the prompt as context. This reduces hallucination, enables knowledge updates without retraining, and provides source attribution. Azure AI Search is a common retrieval backend for RAG pipelines.",
+    "category": "technique"
+  },
+  {
+    "id": "doc-003",
+    "title": "Vector Embeddings",
+    "content": "Vector embeddings are dense numerical representations of text, images, or other data. Models like text-embedding-3-large map text to 3072-dimensional vectors where semantic similarity corresponds to cosine distance. Embeddings enable semantic search, clustering, and recommendation systems.",
+    "category": "fundamentals"
+  },
+  {
+    "id": "doc-004",
+    "title": "Fine-Tuning vs. RAG",
+    "content": "Fine-tuning modifies model weights on domain-specific data, permanently encoding knowledge. RAG keeps the base model frozen and supplies context at inference time. Fine-tuning is better for style/format changes; RAG is better for factual grounding with frequently updated data. Many production systems combine both approaches.",
+    "category": "technique"
+  },
+  {
+    "id": "doc-005",
+    "title": "Azure AI Search Hybrid Retrieval",
+    "content": "Azure AI Search supports hybrid retrieval combining BM25 keyword search with vector similarity search. The Reciprocal Rank Fusion (RRF) algorithm merges results from both signals. Semantic ranker adds a cross-encoder reranking step for improved relevance. This three-stage pipeline (keyword + vector + semantic) consistently outperforms single-signal retrieval.",
+    "category": "azure"
+  }
+]

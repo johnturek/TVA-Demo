@@ -1,6 +1,18 @@
-openai>=1.0.0
-azure-identity>=1.15.0
-azure-ai-projects>=1.0.0b3
-azure-search-documents>=11.4.0
+# Azure AI Foundry SDK v2.0
+azure-ai-projects>=2.0.0
+azure-ai-agents>=1.1.0
+azure-identity>=1.19.0
+
+# Agent Framework 1.0 (GA) — declarative YAML agents
+agent-framework>=1.0.0
+
+# Azure AI Search
+azure-search-documents>=11.6.0
+
+# OpenAI (wrapped by Foundry SDK)
+openai>=1.60.0
+
+# Utilities
 python-dotenv>=1.0.0
 rich>=13.0.0
+pyyaml>=6.0

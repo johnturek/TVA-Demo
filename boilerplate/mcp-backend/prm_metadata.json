@@ -1,0 +1,14 @@
+{
+  "resource": "DYNAMIC_AT_RUNTIME",
+  "resource_name": "MCP Server",
+  "resource_documentation": "https://github.com/aaronba/aaronba-mcp-prm-obo-workshop",
+  "authorization_servers": [
+    "DYNAMIC_FROM_OAUTH_TOKEN_URL"
+  ],
+  "scopes_supported": [
+    "DYNAMIC_FROM_OAUTH_CLIENT_ID"
+  ],
+  "bearer_methods_supported": [
+    "header"
+  ]
+}

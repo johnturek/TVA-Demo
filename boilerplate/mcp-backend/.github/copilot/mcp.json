@@ -1,0 +1,8 @@
+{
+  "servers": {
+    "mcp-workshop": {
+      "type": "http",
+      "url": "https://mcp-workshop-tvad02-mcp.icymeadow-63a5056e.eastus2.azurecontainerapps.io/mcp"
+    }
+  }
+}
