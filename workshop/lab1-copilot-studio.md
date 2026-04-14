@@ -16,7 +16,7 @@ By the end of this lab, participants will have:
 ---
 
 ## Prerequisites
-- Access to https://copilotstudio.microsoft.us
+- Access to https://gcc.powerva.microsoft.us
 
 ---
 
