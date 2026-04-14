@@ -1,0 +1,167 @@
+# OpenAPI 3.0 spec for Lab 07 — AI Foundry Agent API
+# Import this into Copilot Studio as a Custom Connector.
+#
+# Before importing, replace the placeholders:
+#   <CONTAINER_APP_FQDN>  → your Container App FQDN
+#   <TENANT_ID>           → your Entra tenant ID
+#   <CLIENT_ID>           → your Entra app registration client ID
+
+openapi: "3.0.1"
+info:
+  title: AI Foundry Agent API
+  description: >
+    REST API wrapping a hosted AI Foundry agent with OBO authentication.
+    Supports non-streaming and SSE streaming chat endpoints.
+  version: "1.0.0"
+
+servers:
+  - url: https://<CONTAINER_APP_FQDN>
+    description: Azure Container App deployment
+
+security:
+  - oauth2: []
+
+paths:
+  /health:
+    get:
+      operationId: getHealth
+      summary: Health check
+      description: Returns agent configuration and OBO status.
+      security: []
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: healthy
+                  agent_name:
+                    type: string
+                    example: TvaDamSafetyInspector
+                  agent_version:
+                    type: string
+                    example: "1"
+                  obo_enabled:
+                    type: boolean
+                    example: true
+
+  /chat:
+    post:
+      operationId: chat
+      summary: Chat with the hosted agent
+      description: >
+        Send a message to the hosted AI Foundry agent and receive the full
+        response. Pass conversation_history for multi-turn conversations.
+        The Bearer token (if present) is exchanged via OBO so the agent
+        runs as the authenticated user.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChatRequest"
+      responses:
+        "200":
+          description: Agent response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChatResponse"
+        "401":
+          description: Unauthorized — invalid or expired Bearer token
+        "503":
+          description: Agent not found — check AZURE_AGENT_NAME
+
+  /chat/stream:
+    post:
+      operationId: chatStream
+      summary: Chat with streaming (SSE)
+      description: >
+        Send a message to the hosted AI Foundry agent and receive the
+        response as a Server-Sent Events stream. Each event is a JSON
+        object with type "delta" (partial text) or "done" (complete).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChatRequest"
+      responses:
+        "200":
+          description: SSE stream of agent response tokens
+          content:
+            text/event-stream:
+              schema:
+                type: string
+                description: >
+                  SSE stream. Each line: data: {"type":"delta","content":"..."} or
+                  data: {"type":"done","content":"...full text..."}
+        "401":
+          description: Unauthorized — invalid or expired Bearer token
+        "503":
+          description: Agent not found — check AZURE_AGENT_NAME
+
+components:
+  schemas:
+    ChatRequest:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          description: The user's message to send to the agent.
+          example: What types of dam inspections are required?
+        conversation_history:
+          type: array
+          description: >
+            Optional conversation history for multi-turn. Each item is a
+            {role, content} object. Pass the conversation_history from the
+            previous ChatResponse to continue the conversation.
+          default: []
+          items:
+            type: object
+            properties:
+              role:
+                type: string
+                enum: [user, assistant]
+              content:
+                type: string
+
+    ChatResponse:
+      type: object
+      properties:
+        response:
+          type: string
+          description: The agent's response text.
+        conversation_history:
+          type: array
+          description: >
+            Updated conversation history including the latest exchange.
+            Pass this back in the next request for multi-turn.
+          items:
+            type: object
+            properties:
+              role:
+                type: string
+                enum: [user, assistant]
+              content:
+                type: string
+
+  securitySchemes:
+    oauth2:
+      type: oauth2
+      description: >
+        Entra ID OAuth2 authorization code flow. The token is exchanged
+        via OBO on the server side for a Cognitive Services token.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login.microsoftonline.com/<TENANT_ID>/oauth2/v2.0/authorize
+          tokenUrl: https://login.microsoftonline.com/<TENANT_ID>/oauth2/v2.0/token
+          refreshUrl: https://login.microsoftonline.com/<TENANT_ID>/oauth2/v2.0/token
+          scopes:
+            api://<CLIENT_ID>/access_as_user: Access the AI Foundry Agent API on behalf of the user

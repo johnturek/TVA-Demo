@@ -1,0 +1,13 @@
+# Lab 07 — AI Foundry Agent API
+# Install alongside the root foundry-lab/requirements.txt
+
+fastapi>=0.115.0
+uvicorn[standard]>=0.30.0
+sse-starlette>=2.0.0
+azure-ai-projects>=2.0.0
+azure-identity>=1.19.0
+openai>=1.60.0
+msal>=1.28.0
+python-dotenv>=1.0.0
+rich>=13.0.0
+pydantic>=2.0.0
