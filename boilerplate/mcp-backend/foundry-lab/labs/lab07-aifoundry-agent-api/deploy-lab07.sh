@@ -86,7 +86,27 @@ IMAGE_NAME="lab07-agent-api"
 IMAGE_TAG="v$(date +%Y%m%d-%H%M%S)"
 
 # ── Auto-discover Container Apps infra if not set ────────────────────────────
-# Finds the first ACR and Container Apps Environment in the subscription.
+# Priority: LAB07_* env vars  →  root deploy.ps1 naming convention  →  subscription scan.
+#
+# The root deploy.ps1 derives names from its -Prefix (default "mcp-workshop") and -LabNum:
+#   RG  = <prefix>-rg
+#   ACR = <prefix-stripped><labnum-stripped>acr   (non-alphanum removed)
+#   Env = <prefix>-<labnum>-env
+#
+# Set MCP_WORKSHOP_PREFIX and MCP_WORKSHOP_LABNUM in .env to match your root deployment.
+
+MCP_PREFIX="${MCP_WORKSHOP_PREFIX:-mcp-workshop}"
+MCP_LABNUM="${MCP_WORKSHOP_LABNUM:-}"
+
+# Derive expected names using the same formula as root deploy.ps1
+MCP_PREFIX_STRIPPED=$(echo "${MCP_PREFIX}" | tr -cd '[:alnum:]')
+MCP_LABNUM_STRIPPED=$(echo "${MCP_LABNUM}" | tr -cd '[:alnum:]')
+MCP_LABSUFFIX=""
+if [ -n "${MCP_LABNUM}" ]; then MCP_LABSUFFIX="-${MCP_LABNUM}"; fi
+
+DERIVED_ACR_NAME=$(echo "${MCP_PREFIX_STRIPPED}${MCP_LABNUM_STRIPPED}acr" | tr '[:upper:]' '[:lower:]')
+DERIVED_ENV_NAME=$(echo "${MCP_PREFIX}${MCP_LABSUFFIX}-env" | tr '[:upper:]' '[:lower:]')
+DERIVED_RG_NAME="${MCP_PREFIX}-rg"
 
 step "Preflight Checks"
 status "Verifying Azure CLI login..."
@@ -95,27 +115,93 @@ ok "Azure CLI logged in"
 status "Setting subscription ${SUBSCRIPTION_ID}..."
 az account set --subscription "${SUBSCRIPTION_ID}"
 
+# ── Discover ACR ─────────────────────────────────────────────────────────────
+
 if [ -z "${ACR_NAME}" ]; then
-  status "Auto-discovering ACR..."
-  ACR_NAME=$(az acr list --subscription "${SUBSCRIPTION_ID}" --query "[0].name" -o tsv 2>/dev/null | xargs)
-  if [ -z "${ACR_NAME}" ]; then
-    fail "No ACR found. Set LAB07_ACR_NAME in .env or create one."
-    exit 1
+  # Try root deploy.ps1 naming convention first
+  status "Checking for ACR '${DERIVED_ACR_NAME}' (root deploy.ps1 convention)..."
+  if az acr show --name "${DERIVED_ACR_NAME}" --subscription "${SUBSCRIPTION_ID}" -o none 2>/dev/null; then
+    ACR_NAME="${DERIVED_ACR_NAME}"
+    ok "Found ACR: ${ACR_NAME} (root deploy.ps1 convention)"
+  else
+    # Fall back to subscription-wide scan
+    status "Not found — scanning subscription for any ACR..."
+    ACR_NAME=$(az acr list --subscription "${SUBSCRIPTION_ID}" --query "[0].name" -o tsv 2>/dev/null | xargs)
+    if [ -n "${ACR_NAME}" ]; then
+      warn "Using first ACR in subscription: ${ACR_NAME} — set LAB07_ACR_NAME to be explicit"
+    fi
   fi
-  ok "Found ACR: ${ACR_NAME}"
 fi
-RESOURCE_GROUP="${RESOURCE_GROUP:-$(az acr show --name "${ACR_NAME}" --query resourceGroup -o tsv 2>/dev/null | xargs)}"
+
+if [ -z "${ACR_NAME}" ]; then
+  fail "No Azure Container Registry found."
+  echo ""
+  echo "  Lab 07 needs an ACR and Container Apps Environment."
+  echo "  These are created by the root deploy.ps1, not foundry-lab/deploy.ps1."
+  echo ""
+  echo "  Option 1 — Run the root deploy script first:"
+  echo "    cd $(dirname "${FOUNDRY_LAB_DIR}")"
+  echo "    pwsh deploy.ps1 -LabNum <your-lab-number>"
+  echo ""
+  echo "  Option 2 — Set these vars in foundry-lab/.env:"
+  echo "    LAB07_ACR_NAME=<your-acr-name>"
+  echo "    LAB07_RESOURCE_GROUP=<rg-containing-acr-and-container-env>"
+  echo "    LAB07_CONTAINER_ENV_NAME=<container-apps-env-name>"
+  echo ""
+  echo "  Option 3 — Set the naming convention vars in foundry-lab/.env"
+  echo "             to match your root deploy.ps1 -Prefix / -LabNum:"
+  echo "    MCP_WORKSHOP_PREFIX=mcp-workshop"
+  echo "    MCP_WORKSHOP_LABNUM=tvad01"
+  echo ""
+  exit 1
+fi
+
+# ── Resolve resource group from ACR ──────────────────────────────────────────
+
+if [ -z "${RESOURCE_GROUP}" ]; then
+  RESOURCE_GROUP=$(az acr show --name "${ACR_NAME}" --query resourceGroup -o tsv 2>/dev/null | xargs)
+fi
+if [ -z "${RESOURCE_GROUP}" ]; then
+  fail "Could not determine resource group for ACR '${ACR_NAME}'."
+  echo "  Set LAB07_RESOURCE_GROUP in foundry-lab/.env"
+  exit 1
+fi
+
+# ── Discover Container Apps Environment ──────────────────────────────────────
 
 if [ -z "${CONTAINER_ENV_NAME}" ]; then
-  status "Auto-discovering Container Apps Environment..."
-  CONTAINER_ENV_NAME=$(az resource list --resource-group "${RESOURCE_GROUP}" \
-    --resource-type Microsoft.App/managedEnvironments --query "[0].name" -o tsv 2>/dev/null | xargs)
-  if [ -z "${CONTAINER_ENV_NAME}" ]; then
-    fail "No Container Apps Environment found in ${RESOURCE_GROUP}. Set LAB07_CONTAINER_ENV_NAME."
-    exit 1
+  # Try root deploy.ps1 naming convention first
+  status "Checking for Container Apps Environment '${DERIVED_ENV_NAME}' in ${RESOURCE_GROUP}..."
+  if az resource show --resource-group "${RESOURCE_GROUP}" --resource-type Microsoft.App/managedEnvironments \
+       --name "${DERIVED_ENV_NAME}" -o none 2>/dev/null; then
+    CONTAINER_ENV_NAME="${DERIVED_ENV_NAME}"
+    ok "Found environment: ${CONTAINER_ENV_NAME} (root deploy.ps1 convention)"
+  else
+    # Fall back to scanning the resource group
+    status "Not found — scanning resource group for any Container Apps Environment..."
+    CONTAINER_ENV_NAME=$(az resource list --resource-group "${RESOURCE_GROUP}" \
+      --resource-type Microsoft.App/managedEnvironments --query "[0].name" -o tsv 2>/dev/null | xargs)
+    if [ -n "${CONTAINER_ENV_NAME}" ]; then
+      warn "Using first env in ${RESOURCE_GROUP}: ${CONTAINER_ENV_NAME} — set LAB07_CONTAINER_ENV_NAME to be explicit"
+    fi
   fi
-  ok "Found environment: ${CONTAINER_ENV_NAME}"
 fi
+
+if [ -z "${CONTAINER_ENV_NAME}" ]; then
+  fail "No Container Apps Environment found in resource group '${RESOURCE_GROUP}'."
+  echo ""
+  echo "  Lab 07 needs a Container Apps Environment."
+  echo "  This is created by the root deploy.ps1, not foundry-lab/deploy.ps1."
+  echo ""
+  echo "  Option 1 — Run the root deploy script first:"
+  echo "    cd $(dirname "${FOUNDRY_LAB_DIR}")"
+  echo "    pwsh deploy.ps1 -LabNum <your-lab-number>"
+  echo ""
+  echo "  Option 2 — Set LAB07_CONTAINER_ENV_NAME in foundry-lab/.env"
+  echo ""
+  exit 1
+fi
+
 CONTAINER_ENV_ID="/subscriptions/${SUBSCRIPTION_ID}/resourceGroups/${RESOURCE_GROUP}/providers/Microsoft.App/managedEnvironments/${CONTAINER_ENV_NAME}"
 
 step_done
