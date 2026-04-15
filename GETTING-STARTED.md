@@ -4,6 +4,17 @@
 
 ---
 
+## Prerequisites
+
+> ⚠️ **Required Azure Entra ID Roles:** Before starting, each participant must have the following roles assigned in the workshop Azure tenant:
+>
+> - **Application Administrator** — needed to create and configure Entra ID app registrations
+> - **Application Developer** — needed to register applications and grant API permissions
+>
+> Ask your facilitator or tenant admin to assign these roles **before the workshop begins**. Without them, the deployment scripts in Lab 3 will fail.
+
+---
+
 ## Step 1: Sign into GitHub and Azure (required)
 
 ### GitHub CLI (for cloning and repo operations)

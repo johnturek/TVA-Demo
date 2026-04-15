@@ -22,6 +22,16 @@ You → Copilot Studio → APIM (JWT validated) → Container Apps (MCP Server) 
 
 ---
 
+## Prerequisites
+
+> ⚠️ **Required Azure Entra ID Roles:** Each participant needs these roles assigned in the workshop Azure tenant before starting:
+> - **Application Administrator** — to create and configure Entra ID app registrations
+> - **Application Developer** — to register applications and grant API permissions
+>
+> Have your tenant admin assign these **before the workshop**. Without them, deployment scripts will fail.
+
+---
+
 ## Quick Start
 
 > 📥 **Enterprise users:** Need to bring this into your GitHub Enterprise org first? See **[Import Repo Guide](workshop/import-repo.md)** — do this before anything else.
