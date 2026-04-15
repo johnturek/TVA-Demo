@@ -51,8 +51,8 @@ code .env
 
 | Lab | Command | What you'll do |
 |-----|---------|---------------|
-| **Lab 1** — Azure AI Foundry | Open `workshop/lab1-azure-foundry.md` | Create a Foundry project, upload docs, test AI agent |
-| **Lab 2** — Copilot Studio | Open `workshop/lab2-copilot-studio.md` | Build a Copilot Studio agent |
+| **Lab 1** — Copilot Studio | Open `workshop/lab2-copilot-studio.md` | Build a Copilot Studio agent |
+| **Lab 2** — Azure AI Foundry | Open `workshop/lab1-azure-foundry.md` | Create a Foundry project, upload docs, test AI agent |
 | **Lab 3** — APIM + MCP | Open `workshop/lab3-apim-mcp.md` | Deploy to Azure, connect MCP |
 
 ### Aaron's Hands-On Python Labs (Session 2)
