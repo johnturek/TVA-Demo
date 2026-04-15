@@ -530,8 +530,16 @@ if __name__ == "__main__":
         query = None
         context_docs = None
 
+        exercise_funcs = {
+            1: exercise_1_create_index,
+            2: exercise_2_generate_embeddings,
+            3: exercise_3_upload_documents,
+            4: exercise_4_hybrid_search,
+            5: exercise_5_rag_generation,
+        }
+
         for n in range(1, up_to + 1):
-            show_exercise_intro(EXERCISES[n - 1])
+            show_exercise_intro(EXERCISES[n - 1], func=exercise_funcs[n])
             if n == 1:
                 index_name = exercise_1_create_index()
             elif n == 2:

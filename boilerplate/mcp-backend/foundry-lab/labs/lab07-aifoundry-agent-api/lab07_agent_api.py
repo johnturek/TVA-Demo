@@ -1352,15 +1352,15 @@ if __name__ == "__main__":
 
     if selected:
         ex_meta = EXERCISES[selected - 1]
-        show_exercise_intro(ex_meta)
+        show_exercise_intro(ex_meta, func=EXERCISE_FUNCS[selected])
         EXERCISE_FUNCS[selected]()
         show_exercise_summary(ex_meta)
     else:
         show_lab_intro()
 
-        for i, (ex_meta, func) in enumerate(zip(EXERCISES, EXERCISE_FUNCS.values())):
-            show_exercise_intro(ex_meta)
-            func()
+        for i, (ex_meta, ex_func) in enumerate(zip(EXERCISES, EXERCISE_FUNCS.values())):
+            show_exercise_intro(ex_meta, func=ex_func)
+            ex_func()
             show_exercise_summary(ex_meta)
             if i < len(EXERCISES) - 1:
                 console.input("\n[dim]Press Enter to continue...[/]")

@@ -3,10 +3,30 @@ Shared exercise navigation menu for all Foundry labs.
 Provides an interactive sub-menu for browsing exercise explanations.
 """
 
+import inspect
+import subprocess
 from rich.console import Console
 from rich.panel import Panel
 
 console = Console()
+
+
+def _open_in_editor(func):
+    """Open the source file for *func* in VS Code at the function definition.
+
+    Uses ``code -g file:line`` which works in Codespaces / vscode.dev terminals.
+    Silently ignored when the ``code`` CLI is unavailable (local shell, SSH, etc.).
+    """
+    try:
+        source_file = inspect.getfile(func)
+        source_line = inspect.getsourcelines(func)[1]
+        subprocess.Popen(
+            ["code", "-g", f"{source_file}:{source_line}"],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+    except Exception:
+        pass
 
 
 def show_exercise_menu(lab_title: str, exercises: list[dict]):
@@ -48,14 +68,20 @@ def show_exercise_menu(lab_title: str, exercises: list[dict]):
             console.print("[yellow]Invalid selection. Try again.[/]")
 
 
-def show_exercise_intro(ex: dict):
+def show_exercise_intro(ex: dict, *, func=None):
     """Display an exercise explanation panel inline before the exercise runs.
 
     Call this right before each exercise function so the user sees the
     context, motivation, and key concepts before any output is generated.
     Pauses with "Press Enter to continue..." so the user can read the
     explanation before the exercise output begins.
+
+    If *func* is supplied, the corresponding source file is opened in
+    VS Code at the function definition (works in Codespaces / vscode.dev).
     """
+    if func is not None:
+        _open_in_editor(func)
+
     content = (
         f"[bold]{ex['title']}[/]\n\n"
         f"[bold yellow]Why This Matters[/]\n{ex['why']}\n\n"
