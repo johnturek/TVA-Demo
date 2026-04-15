@@ -226,11 +226,10 @@ In Copilot Studio, **Tools** are pre-built or custom actions that extend what yo
 | Tool Type | Description | Example |
 |---|---|---|
 | **Connectors** | Pre-built connectors to Microsoft 365 and third-party services | Send an email via Outlook, create a Planner task, post to Teams |
-| **Power Automate flows** | Custom flows triggered from a topic node | Submit a variance request to a SharePoint list, send an approval |
+| **Agent flows** | Custom flows triggered from a topic node | Submit a variance request to a SharePoint list, send an approval |
 | **HTTP Request (Advanced)** | Direct REST API calls from within a topic | Call an external compliance API |
 | **AI Builder models** | Pre-built or custom AI models | Extract data from a scanned compliance document |
 | **MCP** | Open protocol that lets AI agents securely connect to external tools and data sources through a standardized interface | Create, list, edit... meetings |
-| **Agent Flows** | Power Automate Flow that can chain multiple actions | Send a notification and update a Dataverse table |
 
 ### Tools 1: Email Management MCP
 
