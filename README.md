@@ -38,7 +38,10 @@ gh auth login
 git clone https://github.com/johnturek/TVA-Demo
 cd TVA-Demo
 
-# 3. Install dependencies + upload docs
+# 3. Install npm packages
+npm install
+
+# 4. Install dependencies + upload docs
 npx just setup
 
 # 4. Provision Azure resources (LAB_NUM must be unique per student, e.g. tvad01)
